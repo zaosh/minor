@@ -1,0 +1,14 @@
+data/
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+models/artifacts/*
+!models/artifacts/.gitkeep
+synopsis.docx
+.claude/
+.venv/
+reports/predictions.parquet
+reports/quick/

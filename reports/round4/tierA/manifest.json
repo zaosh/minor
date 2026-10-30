@@ -1,0 +1,78 @@
+{
+  "created_utc": "2026-10-28T18:54:15+00:00",
+  "input_predictions": "data/round3_frozen/reports/predictions.parquet",
+  "input_sha256": "6176663407e56646b7f61f8f2431c872d2651aa148301c2e87c015ea40c501f4",
+  "python": "3.12.13",
+  "packages": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "scipy": "1.18.1"
+  },
+  "prereg": {
+    "combos": {
+      "combo_hg": [
+        "har",
+        "garch"
+      ],
+      "combo_hgx": [
+        "har",
+        "garch",
+        "xgboost"
+      ]
+    },
+    "vol_floor": 0.0001,
+    "dq_lags": 4,
+    "vix_start": "2010-01-05",
+    "stress_folds": [
+      "2020",
+      "2022"
+    ],
+    "min_regime_dates": 50,
+    "mcs_alpha": 0.1
+  },
+  "vix_thresholds": {
+    "2020": 16.899999618530273,
+    "2021": 17.1299991607666,
+    "2022": 17.229999542236328,
+    "2023": 17.510000228881836,
+    "2024": 17.06999969482422,
+    "2025": 16.760000228881836
+  },
+  "regime_counts": {
+    "vix": [
+      128,
+      205
+    ],
+    "calendar": [
+      99,
+      234
+    ]
+  },
+  "floored_vol_rows": {
+    "naive": 0,
+    "ewma": 0,
+    "ledoit_wolf": 0,
+    "har": 0,
+    "garch": 0,
+    "rf": 0,
+    "xgboost": 0,
+    "lstm": 0,
+    "combo_hg": 0,
+    "combo_hgx": 0
+  },
+  "cal_determinism_check": {
+    "n_rows_equal": true,
+    "max_abs_diff_existing_cal": 0.0
+  },
+  "recompute_vs_frozen_metrics": {
+    "n_compared": 810,
+    "n_frozen": 810,
+    "max_abs_diff": 0.0,
+    "n_nan_both": 6
+  },
+  "known_limitations": [
+    "date-level DQ Wald is oversized under clustered hits in simulation (tests/test_round4_tier_a.py): p-values are descriptive",
+    "per-portfolio Christoffersen/DQ have about 17 hits each: descriptive",
+    "regime MCS bootstraps non-contiguous dates: approximate"
+  ]
+}
