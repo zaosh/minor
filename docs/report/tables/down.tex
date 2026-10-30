@@ -1,0 +1,19 @@
+\begin{tabular}{lrrrrr}
+\hline
+Sizing forecast & Track.\ err. & Vol (\%) & Sharpe & Max DD (\%) & Turn.\ /yr \\
+\hline
+Oracle (ceiling) & 0.0046 & 9.9 & 1.22 & -6.9 & 3.2 \\
+EWMA & 0.0175 & 10.6 & 0.65 & -9.5 & 2.5 \\
+Naive & 0.0187 & 11.0 & 0.67 & -9.8 & 3.1 \\
+GJR-GARCH-t & 0.0192 & 9.7 & 0.74 & -8.4 & 1.8 \\
+LSTM & 0.0195 & 10.6 & 0.68 & -9.6 & 3.1 \\
+Combo HAR+GARCH+XGB & 0.0204 & 10.3 & 0.71 & -9.4 & 1.6 \\
+GARCH(1,1) & 0.0210 & 9.7 & 0.72 & -8.7 & 1.6 \\
+Random Forest & 0.0212 & 10.9 & 0.70 & -9.7 & 2.3 \\
+Combo HAR+GARCH & 0.0214 & 10.2 & 0.70 & -9.3 & 1.5 \\
+XGBoost & 0.0218 & 10.8 & 0.71 & -9.7 & 2.4 \\
+HAR & 0.0246 & 10.9 & 0.67 & -10.2 & 1.6 \\
+Ledoit-Wolf & 0.0361 & 10.7 & 0.66 & -10.3 & 0.3 \\
+No scaling & 0.1076 & 19.3 & 0.77 & -17.4 & 0.0 \\
+\hline
+\end{tabular}
