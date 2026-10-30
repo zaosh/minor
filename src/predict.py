@@ -147,7 +147,8 @@ def serving_features(r: pd.Series, end: int, row: pd.DataFrame, har_coef, fit_en
     else:
         ewma = float(row["ewma_vol"].iloc[0])
         rec = simdd.ewma_recursion()
-        z = baselines.FHSBaseline(r.to_numpy(dtype=float)[None, :])._ewma_z(0, fit_end)
+        z = baselines.FHSBaseline(r.to_numpy(dtype=float)[None, :])._ewma_z(
+            0, min(fit_end, end + 1))  # never past the as-of row
         dd = simdd.simulate_dd_prob([ewma / baselines.ANN], rec["mu"], rec["omega"], rec["alpha"],
                                     rec["beta"], z, U)[0]
         out.update(garch_vol21=ewma, garch_sigma1=ewma, garch_fallback=1.0, sim_dd_raw=float(dd))
@@ -237,7 +238,7 @@ def _predict_with(
             base["garch"] = {k: base["ewma"][k] for k in ("vol_hat", "dd_hat", "var_hat",
                                                           "es_hat")}
             q, es = baselines.fhs_quantiles(
-                baselines.FHSBaseline(r_hist[None, :])._ewma_z(0, garch_fit_end))
+                baselines.FHSBaseline(r_hist[None, :])._ewma_z(0, min(garch_fit_end, end + 1)))
             base["fhs"] = {"var_hat": q * ewma / baselines.ANN, "es_hat": es * ewma / baselines.ANN}
             warnings.append("GARCH did not converge; EWMA used in its place (also for FHS).")
     try:
@@ -264,12 +265,13 @@ def predict_portfolio(
     """Predict vol / drawdown probability / VaR for a user portfolio with the deployed models.
 
     Raises ValueError for invalid tickers or weights, and for an `as_of` whose labels the
-    deployed models were trained on (<= meta["label_end_date"]): those predictions would be
-    in-sample, so use the Backtest view (per-fold models) for past dates.
+    deployed models were trained on (< meta["label_end_date"]): those predictions would be
+    in-sample, so use the Backtest view (per-fold models) for past dates. On label_end_date
+    itself the target window (date+1..date+H) lies wholly after the last training return.
     """
     p = build_user_portfolio(tickers, weights, available_tickers())
     date, meta = _resolve_date(as_of), load_meta()
-    if date <= pd.Timestamp(meta["label_end_date"]):
+    if date < pd.Timestamp(meta["label_end_date"]):
         raise ValueError(
             f"{date:%Y-%m-%d} is inside the deployed models' training period (labels run to "
             f"{meta['label_end_date']}); use the Backtest view for past dates.")

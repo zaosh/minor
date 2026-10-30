@@ -50,6 +50,12 @@ def test_score_vol_adds_qlike_and_msevar_and_keeps_old_metrics():
     assert s["rmse"] == pytest.approx(evaluate.rmse(y, y * 1.1))
 
 
+def test_share_rejecting_ignores_untestable_portfolios():
+    p = np.array([0.01, 0.20, np.nan, 0.03, np.nan])
+    assert var_tests.share_rejecting(p, 0.05) == pytest.approx(2 / 3)  # not 2/5
+    assert math.isnan(var_tests.share_rejecting(np.array([np.nan, np.nan]), 0.05))
+
+
 def test_holm_hand_values():
     assert significance.holm(np.array([0.01, 0.04, 0.03])) == pytest.approx([0.03, 0.06, 0.06])
     assert significance.holm(np.array([0.5])) == pytest.approx([0.5])

@@ -205,7 +205,8 @@ def backtest_table(models: dict[str, dict], real: dict) -> pd.DataFrame:
             "p_drawdown": v.get("dd_hat", np.nan), "drawdown_occurred": real["dd_flag"],
             "max_dd": real["max_dd"],
             "var_pred": var, "es_pred": v.get("es_hat", np.nan), "next_return": real["r_next"],
-            "var_exceeded": (bool(real["r_next"] < var) if pd.notna(var) else None),
+            "var_exceeded": (bool(real["r_next"] < var)
+                             if pd.notna(var) and pd.notna(real["r_next"]) else None),
         })
     return pd.DataFrame(rows).set_index("model")
 

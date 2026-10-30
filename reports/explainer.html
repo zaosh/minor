@@ -6,7 +6,7 @@
   :root {
     --bg: #f5f7f9; --surface: #ffffff; --fg: #17222d; --muted: #5a6b7b; --line: #d9e0e7;
     --accent: #0b6e6e; --accent-soft: #d8eeee; --ml: #0b6e6e; --base: #9aa8b5; --warn: #a15c07;
-    --warn-soft: #f8ebd5; --code-bg: #eaeff3;
+    --warn-soft: #f8ebd5; --code-bg: #eaeff3; --combo: #8a5aa8;
     --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
     --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
   }
@@ -14,13 +14,13 @@
     :root:not([data-theme="light"]) {
       --bg: #0f171e; --surface: #16212b; --fg: #e4ebf1; --muted: #93a3b3; --line: #29384a;
       --accent: #4fc4c0; --accent-soft: #15353a; --ml: #4fc4c0; --base: #5d6f80; --warn: #e5a54b;
-      --warn-soft: #33270f; --code-bg: #1d2a37; color-scheme: dark;
+      --warn-soft: #33270f; --code-bg: #1d2a37; --combo: #c39be0; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --bg: #0f171e; --surface: #16212b; --fg: #e4ebf1; --muted: #93a3b3; --line: #29384a;
     --accent: #4fc4c0; --accent-soft: #15353a; --ml: #4fc4c0; --base: #5d6f80; --warn: #e5a54b;
-    --warn-soft: #33270f; --code-bg: #1d2a37; color-scheme: dark;
+    --warn-soft: #33270f; --code-bg: #1d2a37; --combo: #c39be0; color-scheme: dark;
   }
   * { box-sizing: border-box; }
   body {
@@ -68,15 +68,22 @@
   .good { background: var(--accent-soft); border-left-color: var(--accent); }
   .bars { display: flex; flex-direction: column; gap: 6px; background: var(--surface);
     border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
-  .bar { display: grid; grid-template-columns: 110px 1fr 64px; gap: 10px; align-items: center; font-size: 0.88rem; }
+  .bar { display: grid; grid-template-columns: 132px 1fr 64px; gap: 10px; align-items: center; font-size: 0.88rem; }
   .bar .track { height: 14px; background: var(--code-bg); border-radius: 3px; overflow: hidden; }
   .bar .fill { height: 100%; background: var(--base); border-radius: 3px; }
   .bar.ml .fill { background: var(--ml); }
   .bar.ml .name { font-weight: 600; }
+  .bar.combo .fill { background: var(--combo); }
+  .bar.combo .name { font-weight: 600; }
   .bar .val { font: 0.82rem var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; }
   .legend { display: flex; gap: 16px; font-size: 0.8rem; color: var(--muted); flex-wrap: wrap; }
   .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; background: var(--base); }
   .legend i.m { background: var(--ml); }
+  .legend i.c { background: var(--combo); }
+  .slides { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .slide { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .slide p { font-size: 0.92rem; color: var(--muted); }
+  .slide p b { color: var(--fg); }
   .rule { font-size: 0.92rem; }
   .formula { font-family: var(--f-mono); font-size: 0.86rem; background: var(--code-bg); padding: 10px 14px;
     border-radius: 6px; overflow-x: auto; white-space: pre; line-height: 1.7; max-width: 100%; }
@@ -95,7 +102,7 @@
   summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
   details p { color: var(--muted); }
   .time { font: 500 0.78rem var(--f-mono); color: var(--accent); white-space: nowrap; }
-  @media (max-width: 520px) { .bar { grid-template-columns: 84px 1fr 56px; } }
+  @media (max-width: 520px) { .bar { grid-template-columns: 96px 1fr 56px; font-size: 0.82rem; } }
   @media (prefers-reduced-motion: no-preference) { nav a { transition: border-color .15s, color .15s; } }
 </style>
 
@@ -103,18 +110,17 @@
   <header style="display:flex;flex-direction:column;gap:16px">
     <span class="eyebrow">Minor project · Data Science</span>
     <h1>Predicting how risky a portfolio will be next month</h1>
-    <p class="lead">You enter NSE stocks and weights. The system estimates three risk numbers for the next 21 trading days and shows how a Random Forest, XGBoost and an LSTM compare with traditional methods such as GARCH.</p>
+    <p class="lead">You enter NSE stocks and weights. The system estimates three risk numbers for the next 21 trading days and shows how a Random Forest, XGBoost and an LSTM compare with traditional methods such as GARCH. This page carries the final (Round 4) results and a presentation kit.</p>
     <nav aria-label="Sections" style="flex-direction:column;gap:10px">
       <div class="navrow"><span class="lbl">Theory</span>
         <a href="#study">Study order</a><a href="#t-basics">Returns</a><a href="#t-vol">Volatility</a><a href="#t-dd">Drawdown</a>
         <a href="#t-var">VaR</a><a href="#t-ratios">Ratios</a><a href="#t-div">Correlation</a><a href="#t-models">How models work</a>
         <a href="#t-ts">Time-series ML</a><a href="#t-metrics">Metrics</a></div>
       <div class="navrow"><span class="lbl">Project</span>
-        <a href="#problem">Problem</a><a href="#pipeline">Pipeline</a><a href="#data">Data</a>
-        <a href="#features">Features</a><a href="#validation">Validation</a><a href="#models">Models</a>
-        <a href="#results">Results</a><a href="#limits">Limits</a></div>
+        <a href="#summary">Findings</a><a href="#problem">Problem</a><a href="#data">Data</a><a href="#validation">Validation</a><a href="#models">Models</a>
+        <a href="#evaluate">Evaluation</a><a href="#results">Results</a><a href="#r3r4">Round 3 to 4</a><a href="#claims">Claims</a><a href="#limits">Limits</a></div>
       <div class="navrow"><span class="lbl">Present</span>
-        <a href="#gloss">Glossary</a><a href="#selftest">Self-test</a><a href="#qa">Likely questions</a><a href="#talk">Talk plan</a></div>
+        <a href="#demo">Demo script</a><a href="#talk">Slides</a><a href="#qa">Examiner questions</a><a href="#selftest">Self-test</a><a href="#gloss">Glossary</a></div>
     </nav>
   </header>
 
@@ -233,17 +239,17 @@ many assets:  vol_p^2 = w' * Sigma * w          (Sigma = covariance matrix)</div
       <div class="panel"><h3>EWMA</h3><div class="formula" style="font-size:.78rem">var_t = 0.94*var_(t-1)
       + 0.06*r_t^2</div><p>Today's variance is mostly yesterday's, nudged by the latest squared return. Recent days weigh more than old ones. No parameters to fit (0.94 is the standard RiskMetrics value).</p></div>
       <div class="panel"><h3>GARCH(1,1)</h3><div class="formula" style="font-size:.78rem">var_t = w + a*r_(t-1)^2
-      + b*var_(t-1)</div><p>Like EWMA but it also pulls variance back toward a long-run average (w / (1 − a − b)). The parameters are estimated from data. Typically a ≈ 0.08 and b ≈ 0.90, so shocks fade slowly. It is the classic academic benchmark and is fit separately for each portfolio.</p></div>
+      + b*var_(t-1)</div><p>Like EWMA but it also pulls variance back toward a long-run average (w / (1 − a − b)). The parameters are estimated from data. It is the classic academic benchmark and is fit separately for each portfolio.</p></div>
       <div class="panel"><h3>HAR-style regression</h3><div class="formula" style="font-size:.78rem">log(future vol) = c
  + b1*log(vol_21)
  + b2*log(vol_63)
  + b3*log(vol_126)</div><p>A plain linear regression on short, medium and long past volatility. Simple, and surprisingly hard to beat.</p></div>
     </div>
-    <p>The traditional models only look at the portfolio's own past returns. They cannot use the VIX, macro data or cross-asset correlation. That is the opening for ML.</p>
+    <p>The traditional models only look at the portfolio's own past returns. They cannot use the VIX, macro data or cross-asset correlation. That is the opening for ML. The project also uses GJR-GARCH (GARCH where bad news raises volatility more than good news, with fat-tailed errors), filtered historical simulation and a simulated-drawdown model, described in Part 2.</p>
 
     <h3>Machine learning models</h3>
     <div class="grid">
-      <div class="panel"><h3>Random Forest</h3><p>Builds many decision trees. Each tree asks a chain of yes/no questions about the features ("is 21-day vol above 18%? is the VIX rising?") and ends in a prediction. Each tree sees a random part of the data and features, and the forest averages all trees. Averaging cancels individual errors. Weakness: it can memorize the training period. In the first run it did exactly that for drawdown probability, until the minimum leaf size was raised to 2000 rows.</p></div>
+      <div class="panel"><h3>Random Forest</h3><p>Builds many decision trees. Each tree asks a chain of yes/no questions about the features ("is 21-day vol above 18%? is the VIX rising?") and ends in a prediction. Each tree sees a random part of the data and features, and the forest averages all trees. Averaging cancels individual errors. Weakness: it can memorize the training period unless trees are kept small.</p></div>
       <div class="panel"><h3>XGBoost</h3><p>Also trees, but built one after another. Each new small tree is trained to fix the mistakes the earlier trees made (gradient boosting). A learning rate controls how big each correction is. Early stopping halts adding trees once the validation error stops improving. Usually stronger than a Random Forest on tabular data, but sensitive to its settings.</p></div>
       <div class="panel"><h3>LSTM (neural network)</h3><p>A recurrent network reads a sequence of days in order, here the last 21, and keeps a hidden memory vector that it updates each day through learned "gates" (what to remember, what to forget, what to output). Its last memory state feeds a small output layer. It learns patterns from the raw sequence without hand-made features. It needs more data and care, and is trained by gradient descent with early stopping.</p></div>
     </div>
@@ -267,16 +273,17 @@ many assets:  vol_p^2 = w' * Sigma * w          (Sigma = covariance matrix)</div
         <tr><td>Overlapping targets</td><td>A target looks 21 days ahead, so a training row from just before the test period contains test-period information.</td><td>A 21-day purge gap between the end of training and the start of testing.</td></tr>
         <tr><td>Fitting scalers on all data</td><td>Normalizing with future averages leaks the future scale.</td><td>Scalers are fit on the training period only, then applied to later data.</td></tr>
         <tr><td>Macro data published late</td><td>CPI for January is not known on January 31.</td><td>Each macro series is shifted by its real publication delay (CPI by 45 days).</td></tr>
-        <tr><td>Weak baselines</td><td>Beating a bad benchmark proves nothing.</td><td>Strong baselines: HAR, GARCH, Ledoit-Wolf, EWMA.</td></tr>
-        <tr><td>Tuning on the test set</td><td>Picking settings that look best on the test years overstates performance.</td><td>Tune only on a validation block inside training, then freeze (planned next).</td></tr>
+        <tr><td>Weak baselines</td><td>Beating a bad benchmark proves nothing.</td><td>Strong baselines: HAR, GARCH, GJR-GARCH, Ledoit-Wolf, EWMA, and Round 4 gives the ML models the same HAR/GARCH information.</td></tr>
+        <tr><td>Tuning on the test set</td><td>Picking settings that look best on the test years overstates performance.</td><td>Hyperparameters were set once by reasoning, never tuned on test years, and the Round 4 choices were pre-registered before any result existed.</td></tr>
       </tbody></table></div>
-    <p><b>Walk-forward in one picture.</b> Fold 1 trains on 2011 to 2019 and tests on 2020. Fold 2 trains on 2011 to 2020 and tests on 2021. And so on through 2025. The training window expands each time, mimicking how a real forecaster would have worked.</p>
-    <p><b>Non-stationarity.</b> Markets change regime (calm bull market, 2020 crash, rate-hike year). A model trained on one regime can fail in another. That is why the results are reported per year and why 2020 and 2022 are shown as stress tests.</p>
+    <p><b>Walk-forward in one picture.</b> Fold 1 trains on data from 2010 to late November 2019 and tests on 2020. Fold 2 trains up to late November 2020 and tests on 2021. And so on, with the last fold testing from January 2025 into 2026. The training window expands each time, mimicking how a real forecaster would have worked.</p>
+    <p><b>Non-stationarity.</b> Markets change regime (calm bull market, 2020 crash, rate-hike year). A model trained on one regime can fail in another. That is why results are also split into calm and stress periods.</p>
   </section>
 
   <section id="t-metrics">
     <span class="eyebrow">Theory 9</span>
     <h2>Metrics: how to read every number</h2>
+    <p>Significance tools used later: Diebold-Mariano tests whether two models' losses differ by more than chance, Holm correction adjusts for running many tests, and the model confidence set lists the models the data cannot rule out.</p>
     <div class="tablewrap"><table>
       <thead><tr><th>Metric</th><th>For</th><th>What it measures</th><th>Good</th></tr></thead>
       <tbody>
@@ -284,20 +291,33 @@ many assets:  vol_p^2 = w' * Sigma * w          (Sigma = covariance matrix)</div
         <tr><td><b>MAE</b></td><td>volatility</td><td>Average absolute error. Easier to interpret than RMSE, less sensitive to outliers.</td><td>lower</td></tr>
         <tr><td><b>Directional accuracy</b></td><td>volatility</td><td>How often the forecast got the direction right: did volatility go up or down versus today? A coin flip is 50%.</td><td>higher</td></tr>
         <tr><td><b>ROC-AUC</b></td><td>drawdown</td><td>Chance a random drawdown day got a higher probability than a random calm day. 0.5 is a coin flip, 1.0 is perfect.</td><td>higher</td></tr>
-        <tr><td><b>Brier score</b></td><td>drawdown</td><td>Average of (probability − outcome)². A forecast of 0.8 scores 0.04 if the event happens and 0.64 if it does not. Always guessing the base rate (33%) scores about 0.22.</td><td>lower</td></tr>
+        <tr><td><b>Brier score</b></td><td>drawdown</td><td>Average of (probability − outcome)². A forecast of 0.8 scores 0.04 if the event happens and 0.64 if it does not. Always guessing the base rate (about a third) scores about 0.22.</td><td>lower</td></tr>
         <tr><td><b>Log-loss</b></td><td>drawdown</td><td>Like Brier but punishes confident wrong forecasts even harder.</td><td>lower</td></tr>
+        <tr><td><b>QLIKE</b></td><td>volatility</td><td>An error score for volatility forecasts that is robust to noise in the realized-volatility yardstick and penalizes under-forecasting more. The main ranking loss in this project.</td><td>lower</td></tr>
         <tr><td><b>Pinball loss</b></td><td>VaR</td><td>For a 5% quantile, a miss on the loss side costs 0.95 per unit and a miss on the safe side costs 0.05. It is minimized only by the true quantile.</td><td>lower</td></tr>
         <tr><td><b>Exceedance rate</b></td><td>VaR</td><td>Share of days the loss was worse than the VaR. Target is 5%.</td><td>near 5%</td></tr>
         <tr><td><b>Kupiec p-value</b></td><td>VaR</td><td>Is the exceedance rate statistically different from 5%? Small p means miscalibrated.</td><td>above 0.05</td></tr>
       </tbody></table></div>
-    <div class="callout">Reading mean ± std: each number is the average over six test years, with the spread across those years. When two models differ by less than that spread, you cannot claim one is better. This is why the results page says "competitive" rather than "wins".</div>
+    <div class="callout">Reading mean ± std: each number is the average over six walk-forward folds, with the spread across those years. When two models differ by less than that spread, you cannot claim one is better. This is why the results say "competitive" rather than "wins".</div>
   </section>
 
   <div class="part">
     <span class="eyebrow">Part 2</span>
-    <h2 style="font-size:1.9rem">The project itself</h2>
-    <p class="lead">With the theory in place, the rest of the page explains what was built and what it found.</p>
+    <h2 style="font-size:1.9rem">The project and its final (Round 4) results</h2>
+    <p class="lead">What was built, how it was tested, and what it found. Every number on this page was read from the project's result files.</p>
   </div>
+
+  <section id="summary">
+    <span class="eyebrow">The answer in one screen</span>
+    <h2>What we found</h2>
+    <div class="callout good"><b>ML is competitive with strong traditional models. It is not better than them.</b> On a one-month horizon with daily data, the best single volatility model is a plain GJR-GARCH. The ML models beat the naive "next month equals last month" forecast with statistical support, but no ML model beats the best traditional model in a significant way. We report that as the finding.</div>
+    <div class="grid">
+      <div class="panel"><h3>Volatility</h3><p>Ranked by QLIKE (our pre-registered main loss), GJR-GARCH is first (0.281), then the XGBoost-HAR-GARCH combination (0.298), the LSTM (0.299) and XGBoost (0.306). By RMSE the combination is first (0.0697). The ranking depends on the loss.</p></div>
+      <div class="panel"><h3>Drawdown probability</h3><p>A GARCH-based simulation with a logistic correction has the best Brier score (0.2046). RF (0.2061) and the LSTM (0.2062) are close behind. Its edge does not survive the multiple-testing correction.</p></div>
+      <div class="panel"><h3>95% VaR</h3><p>Pinball loss is about 0.0014 for every model. GJR is lowest at 0.001367. Raw exceedance rates drift away from 5% in some years for every model. Online calibration brings the average to 4.6% to 4.9%.</p></div>
+      <div class="panel"><h3>Round 3 to Round 4</h3><p>Giving the ML models the HAR and GARCH forecasts as extra inputs improved most of their metrics. None of the 8 tests of that improvement is significant.</p></div>
+    </div>
+  </section>
 
   <section id="problem">
     <span class="eyebrow">The problem</span>
@@ -307,37 +327,38 @@ many assets:  vol_p^2 = w' * Sigma * w          (Sigma = covariance matrix)</div
       <div class="panel"><h3>How likely is a 5% drop?</h3><p>Probability that the worst peak-to-trough fall inside the window reaches 5% or more. Classification with a probability output.</p><span class="tag">target: dd_flag</span></div>
       <div class="panel"><h3>How bad is a bad day?</h3><p>The 95% one-day Value at Risk: the loss that should be exceeded on only 1 day in 20. Quantile regression.</p><span class="tag">target: next-day return, 5% quantile</span></div>
     </div>
-    <p>Classic tools (historical VaR, standard deviation, GARCH) assume the recent past describes the near future. The project asks whether ML, given richer inputs, predicts risk better, and answers it with a fair comparison.</p>
+    <div class="example"><b>Intuitive example.</b> A portfolio is 40% IT stocks, 40% banks and 20% gold. We ask three things on a given date. (1) Will the portfolio swing like a 12%-a-year investment or a 25%-a-year one over the next month? (2) What is the chance it falls at least 5% from its peak at some point in that month? (3) What loss should be exceeded on only about one trading day in twenty? The first is a size, the second a probability, the third a loss level.</div>
+    <p><b>Why bother.</b> Classic tools (historical VaR, standard deviation, GARCH) assume the recent past describes the near future. The project asks whether ML, given richer inputs, predicts risk better, and answers with a fair, pre-planned comparison. The synopsis commits to Random Forest, XGBoost and an LSTM against traditional models, judged by RMSE, MAE and directional accuracy, with a Streamlit dashboard. All of that is delivered.</p>
   </section>
 
   <section id="pipeline">
     <span class="eyebrow">How it fits together</span>
     <h2>From prices to a dashboard</h2>
     <div class="flow">
-      <div class="step"><b>1. Data</b><span>Yahoo prices + India VIX + FRED macro, cached as parquet</span></div>
-      <div class="step"><b>2. Portfolios</b><span>400 random portfolios of 3 to 15 assets</span></div>
-      <div class="step"><b>3. Features + targets</b><span>53 columns per portfolio and date</span></div>
-      <div class="step"><b>4. Models</b><span>8 baselines and 3 ML models</span></div>
+      <div class="step"><b>1. Data</b><span>Yahoo prices, India VIX and FRED macro, cached as parquet</span></div>
+      <div class="step"><b>2. Portfolios</b><span>400 random portfolios of 3 to 15 assets, 80 held out</span></div>
+      <div class="step"><b>3. Features and targets</b><span>Past-only features, forward-only targets</span></div>
+      <div class="step"><b>4. Models</b><span>Traditional baselines, combinations and 3 ML models</span></div>
       <div class="step hl"><b>5. Evaluation</b><span>6 walk-forward folds, one shared metric code path</span></div>
-      <div class="step"><b>6. Streamlit app</b><span>Any portfolio, saved models, no retraining</span></div>
+      <div class="step"><b>6. Streamlit app</b><span>Any portfolio, four views, no retraining on click</span></div>
     </div>
-    <p>The key design choice is to train on <em>many random portfolios</em> instead of one. The model never sees your specific portfolio. It learns how a portfolio's own return history, correlations and the market backdrop relate to future risk, so it works for any mix of the 45 tickers.</p>
   </section>
 
   <section id="data">
-    <span class="eyebrow">Data</span>
-    <h2>45 tickers, 2010 to October 2026</h2>
+    <span class="eyebrow">Data and setup</span>
+    <h2>45 NSE tickers, 2010 to 2026</h2>
     <div class="grid">
-      <div class="panel"><h3>Universe</h3><p>40 NIFTY large caps across IT, banks, energy, consumer, auto, industrials and pharma, plus NIFTYBEES, JUNIORBEES, BANKBEES, PSUBNKBEES and GOLDBEES. All have complete history from January 2010.</p></div>
-      <div class="panel"><h3>Macro inputs</h3><p>India VIX, US 10-year yield, USD/INR, Brent crude, US fed funds rate and US CPI inflation. Each is lagged by its real publication delay (CPI by 45 days, USD/INR and Brent by 10 days) and enters the models as a change, because levels let trees memorise calendar regimes.</p></div>
-      <div class="panel"><h3>Cleaning</h3><p>Yahoo had bad prints: four ETFs fell 90% then rose 900% around 19 Dec 2019, and Nestle showed a split-sized drop in 2010. Any daily move above 50% is treated as a data error, set to zero and logged.</p></div>
+      <div class="panel"><h3>Universe</h3><p>40 NIFTY large caps plus 5 index, sector and gold ETFs (NIFTYBEES, JUNIORBEES, BANKBEES, PSUBNKBEES, GOLDBEES). Adjusted close prices from Yahoo Finance, so dividends and splits do not look like returns.</p></div>
+      <div class="panel"><h3>Macro inputs</h3><p>India VIX, plus US 10-year yield, USD/INR, Brent crude, US fed funds rate and US CPI inflation. Each is lagged by its real publication delay (CPI by 45 days, USD/INR and Brent by 10 days) and enters as a change, because levels let trees memorise calendar regimes.</p></div>
+      <div class="panel"><h3>Synthetic portfolios</h3><p>400 random portfolios of 3 to 15 assets with random (Dirichlet) weights, sampled on every 5th trading day. The model sees how a portfolio has behaved, not which stocks it holds, so one model can score any user portfolio. 80 portfolios are never used for training and are scored separately.</p></div>
     </div>
-    <div class="callout">No bond asset. Indian gilt ETFs do not have history back to 2010, so gold is the only diversifier. State this as a limitation.</div>
+    <p><b>Why synthetic portfolios.</b> One real portfolio would give one return series and nothing to generalize from. Many random ones teach the model how past risk, correlation and market conditions relate to future risk, for any mix of the 45 tickers. The catch is that all portfolios share the same market days, so they add less independent information than the number 400 suggests.</p>
+    <div class="callout">Data quality. Yahoo had some bad prints. Any daily move above 50% is treated as a data error, set to zero and logged in <code>reports/return_jumps.csv</code>. There is no bond asset, because Indian gilt ETFs do not have history back to 2010, so gold is the only diversifier.</div>
   </section>
 
   <section id="features">
     <span class="eyebrow">Inputs to the models</span>
-    <h2>What the models see on each date</h2>
+    <h2>What the ML models see on each date</h2>
     <div class="tablewrap"><table>
       <thead><tr><th>Group</th><th>Examples</th><th>Windows</th></tr></thead>
       <tbody>
@@ -347,8 +368,10 @@ many assets:  vol_p^2 = w' * Sigma * w          (Sigma = covariance matrix)</div
         <tr><td>Portfolio shape</td><td>number of assets, concentration (sum of squared weights)</td><td>static</td></tr>
         <tr><td>Market and macro</td><td>India VIX level and change; changes (not levels) in the 10Y yield, USD/INR, Brent, fed funds rate and CPI</td><td>daily, lagged</td></tr>
         <tr><td>Smoothed vol</td><td>EWMA volatility (decay 0.94), no fitted parameters</td><td>running</td></tr>
+        <tr><td><b>New in Round 4</b></td><td>the HAR forecast and two GARCH(1,1) forecasts (21-day and next-day), re-estimated once a year on data before that year</td><td>yearly refit</td></tr>
       </tbody></table></div>
-    <p><b>Predicting the change, not the level.</b> The volatility model predicts <code>log(future vol / current vol)</code>. Volatility is sticky, so a model asked for the raw level mostly copies today's value and looks accurate without adding anything. The ratio forces it to add information.</p>
+    <p><b>How the ML models get the HAR and GARCH inputs.</b> In Round 3 the ML models saw raw features only, and the traditional models had a model-based view of volatility that the ML models lacked. In Round 4 we hand the traditional forecasts to the ML models as three extra columns. Each is estimated only on data before the year it is used, so nothing from the future leaks in.</p>
+    <p><b>Predicting the change, not the level.</b> The volatility models predict <code>log(future vol / current vol)</code>. Volatility is sticky, so a model asked for the raw level mostly copies today's value and looks accurate without adding anything. The ratio forces it to add information.</p>
   </section>
 
   <section id="validation">
@@ -356,105 +379,266 @@ many assets:  vol_p^2 = w' * Sigma * w          (Sigma = covariance matrix)</div
     <h2>Rules that prevent cheating</h2>
     <div class="grid">
       <div class="panel"><h3>No look-ahead</h3><p>Features at day t use data up to t. Targets use days t+1 to t+21. Tests change the future and check that nothing at or before t moves.</p></div>
-      <div class="panel"><h3>Time-based folds</h3><p>Expanding window, tested on 2020, 2021, 2022, 2023, 2024 and 2025 onward. Never a random split.</p></div>
-      <div class="panel"><h3>21-day gap</h3><p>Training rows must end 21 days before the test starts, because a training target looks 21 days ahead and would otherwise overlap the test period.</p></div>
+      <div class="panel"><h3>Walk-forward folds</h3><p>6 expanding-window folds. Test periods start in 2020, 2021, 2022, 2023, 2024 and 2025 (the last runs into 2026). Never a random split.</p></div>
+      <div class="panel"><h3>21-day purge</h3><p>Training rows end 21 days before the test starts, because a training target looks 21 days ahead and would otherwise overlap the test period.</p></div>
       <div class="panel"><h3>Same yardstick</h3><p>Every model, including the baselines, is scored on identical rows by one evaluation file. Scalers are fit on training data only. Seed is 42.</p></div>
+      <div class="panel"><h3>Held-out portfolios</h3><p>80 portfolios are excluded from every training row, so we can check the models on portfolios they have never seen.</p></div>
+      <div class="panel"><h3>Pre-registration</h3><p>The Round 4 choices were written down in code (<code>src/models/prereg.py</code>) before any Round 4 number existed. A test pins them so they cannot drift quietly.</p></div>
     </div>
-    <p>94 automated tests cover this: hand-computed targets and metrics, perturbation tests for leakage (including the backtest view), a check that the app computes exactly the features used in training, and app tests with a fake ticker.</p>
+    <p>194 automated tests cover this, including hand-computed targets and metrics, perturbation tests for leakage (including the backtest view), fold purge checks, a check that the app computes exactly the features used in training, and forecast-log scoring.</p>
   </section>
 
   <section id="models">
     <span class="eyebrow">Contenders</span>
-    <h2>Traditional baselines against ML</h2>
+    <h2>The models in plain language</h2>
+    <h3>Traditional models</h3>
     <div class="grid">
-      <div class="panel"><h3>Traditional</h3>
-        <ul class="tight" style="font-size:.92rem;color:var(--muted)">
-          <li><b>Naive:</b> today's 21-day vol</li><li><b>EWMA:</b> exponentially weighted vol</li>
-          <li><b>Ledoit-Wolf:</b> forecast covariance of the holdings, then the portfolio's vol</li>
-          <li><b>HAR:</b> regression on 21, 63 and 126-day vol</li>
-          <li><b>GARCH(1,1):</b> refit per portfolio each fold</li>
-          <li><b>Historical and parametric VaR</b>, plus a base-rate drawdown guess</li></ul></div>
-      <div class="panel"><h3>Machine learning</h3>
-        <ul class="tight" style="font-size:.92rem;color:var(--muted)">
-          <li><b>Random Forest:</b> volatility and drawdown. It has no quantile loss, so no VaR.</li>
-          <li><b>XGBoost:</b> all three, VaR with a quantile objective.</li>
-          <li><b>LSTM (PyTorch):</b> one single-layer network reading the last 21 days, with three outputs. Early stopping on the most recent year of training data, then refit on all training rows.</li></ul></div>
+      <div class="panel"><h3>Naive</h3><p>Next month's volatility equals the last 21 days. The floor any model should beat.</p></div>
+      <div class="panel"><h3>EWMA</h3><p>A moving estimate where recent days count more than old ones. No fitted parameters.</p></div>
+      <div class="panel"><h3>Ledoit-Wolf</h3><p>Estimates how all the holdings move together, with a stabilizing "shrinkage", then works out the portfolio's volatility from that.</p></div>
+      <div class="panel"><h3>HAR</h3><p>A linear regression of future log volatility on 21, 63 and 126-day past volatility.</p></div>
+      <div class="panel"><h3>GARCH(1,1)</h3><p>Variance depends on yesterday's shock and yesterday's variance, and drifts back to a long-run level.</p></div>
+      <div class="panel"><h3>GJR-GARCH(1,1) with t errors</h3><p>GARCH that lets bad news raise volatility more than good news, and allows fat-tailed returns. This turned out to be the best single volatility model.</p></div>
+      <div class="panel"><h3>Filtered historical simulation (FHS)</h3><p>A VaR method. Use GARCH to remove the volatility pattern, take the 5% quantile of the leftover shocks, then scale back to today's volatility.</p></div>
+      <div class="panel"><h3>Simulated drawdown</h3><p>For drawdown probability: simulate 2,000 GARCH return paths per portfolio and date, and count how often one falls 5% in 21 days. A second version adds a logistic recalibration.</p></div>
+      <div class="panel"><h3>Historical and parametric VaR</h3><p>Historical takes the 5th percentile of recent returns. Parametric assumes normal returns. A base-rate model always predicts the training frequency of a 5% drawdown.</p></div>
+      <div class="panel"><h3>Combinations</h3><p>Equal-weight averages of forecasts. HAR+GARCH, and HAR+GARCH+XGBoost. No weights are estimated.</p></div>
     </div>
-    <p>Drawdown probabilities for the traditional models come from a simulation: given a volatility, how often does a zero-drift random walk fall 5% inside 21 days. That lets GARCH and EWMA answer the same question as the ML models.</p>
+    <h3>Machine learning models</h3>
+    <div class="grid">
+      <div class="panel"><h3>Random Forest</h3><p>Many decision trees, averaged. Predicts volatility and drawdown probability. No quantile loss, so no VaR.</p></div>
+      <div class="panel"><h3>XGBoost</h3><p>Trees built one after another, each fixing the previous errors. Predicts all three targets. VaR uses a quantile (pinball) objective. Up to 600 rounds per head, keeping the validation-curve minimum.</p></div>
+      <div class="panel"><h3>LSTM (PyTorch)</h3><p>One single-layer network reading the last 21 days, with three outputs (volatility, drawdown, VaR). Each head keeps the weights of its own best validation epoch, then is refit on all training rows.</p></div>
+    </div>
+    <p>All three ML models also receive the HAR and GARCH forecasts as inputs (see above). Hyperparameters were set once by reasoning and not tuned.</p>
+    <div class="callout">Two things the combinations show. First, the best RMSE overall (0.0697) comes from averaging XGBoost with HAR and GARCH, which says ML and econometrics complement each other more than they compete. Second, those combinations were chosen after the Round 3 ranks were known. We say so, and we do not count them as the "best baseline" in any test.</div>
+    <h3>Calibrating VaR</h3>
+    <p>An online correction nudges every VaR forecast, baselines included. A model that has been missing too often gets deeper, one that is too cautious gets shallower. The step size (0.25) was fixed by reasoning before the run, and the held-out portfolios never feed it. It fixes the average miss rate over time. It gives no guarantee for a single year or market regime.</p>
+  </section>
+
+  <section id="evaluate">
+    <span class="eyebrow">How we evaluate</span>
+    <h2>Metrics, tests and why we chose them</h2>
+    <div class="grid">
+      <div class="panel"><h3>RMSE, MAE, directional accuracy</h3><p>The metrics promised in the synopsis. Directional accuracy asks whether the forecast moved the same way as actual volatility relative to today. We report all three.</p></div>
+      <div class="panel"><h3>QLIKE (main ranking loss)</h3><p>An error score for volatility that is robust to noise in the realized-volatility measure, and treats under-forecasting as worse than over-forecasting. Realized volatility over 21 days is a noisy yardstick, so a robust loss gives a more trustworthy ranking than RMSE. Chosen in advance as the main ranking loss.</p></div>
+      <div class="panel"><h3>Brier, log-loss, AUC</h3><p>For drawdown probabilities. Brier and log-loss judge the probability itself. AUC judges only whether risky periods are ranked above calm ones.</p></div>
+      <div class="panel"><h3>Pinball, exceedance, Kupiec</h3><p>For VaR. Pinball is the quantile loss. Exceedance is how often losses beat the VaR line (target 5%). Kupiec tests whether that rate is 5%, but treats all portfolio-days as independent, so it over-rejects.</p></div>
+      <div class="panel"><h3>Diebold-Mariano with Holm</h3><p>Is a loss gap between two models bigger than chance? The test works on date-level average losses (about 330 dates), not on the 400 portfolios, because portfolios share dates. Holm correction adjusts for running many tests at once.</p></div>
+      <div class="panel"><h3>Model confidence set (90%)</h3><p>The group of models the data cannot rule out as the best. A model outside the set is clearly worse.</p></div>
+    </div>
+    <p><b>Reading "significant".</b> With roughly 330 test dates and six test years, differences between good models are small compared with how much results move from year to year. Mean ± standard deviation across folds is reported everywhere, and the standard deviations are large. A gap smaller than the spread is not a win.</p>
+    <p><b>Pre-registration.</b> Before the Round 4 run we wrote down the models, losses, tests and the way ties are handled. That stops us from picking the metric that makes our favourite model look best after the fact. The choices that were made after seeing Round 3 results (the two combinations) are marked as such.</p>
   </section>
 
   <section id="results">
     <span class="eyebrow">What happened</span>
     <h2>Results across the six test years</h2>
-    <div class="callout good">Headline: ML is competitive on volatility and drawdown probability but does not clearly beat the best traditional methods; differences are small compared with the year-to-year spread. No ML model beats GARCH at ranking risky periods (drawdown AUC), and no model, ML or traditional, keeps its 95% VaR at 5% every year. That is a legitimate finding.</div>
+    <div class="callout good">Headline: no ML model is significantly better than the best traditional model on any target. XGBoost and the LSTM are significantly better than naive volatility on QLIKE (Holm-adjusted p 0.015 and 0.008). The ML models are competitive, and in some metrics near the top, but the data cannot separate the leading models.</div>
+
+    <h3>Volatility ranked by QLIKE (lower is better)</h3>
+    <div class="bars" role="img" aria-label="Volatility QLIKE ranking, lower is better. GJR-GARCH 0.2809 best, Ledoit-Wolf 0.4616 worst">
+      <div class="bar"><span class="name">GJR-GARCH</span><span class="track"><span class="fill" style="width:60.9%;display:block"></span></span><span class="val">0.2809</span></div>
+      <div class="bar combo"><span class="name">Combo +XGBoost</span><span class="track"><span class="fill" style="width:64.5%;display:block"></span></span><span class="val">0.2979</span></div>
+      <div class="bar ml"><span class="name">LSTM</span><span class="track"><span class="fill" style="width:64.8%;display:block"></span></span><span class="val">0.2993</span></div>
+      <div class="bar ml"><span class="name">XGBoost</span><span class="track"><span class="fill" style="width:66.2%;display:block"></span></span><span class="val">0.3057</span></div>
+      <div class="bar"><span class="name">GARCH</span><span class="track"><span class="fill" style="width:67.0%;display:block"></span></span><span class="val">0.3092</span></div>
+      <div class="bar combo"><span class="name">Combo HAR+GARCH</span><span class="track"><span class="fill" style="width:68.2%;display:block"></span></span><span class="val">0.3150</span></div>
+      <div class="bar ml"><span class="name">Random Forest</span><span class="track"><span class="fill" style="width:73.2%;display:block"></span></span><span class="val">0.3378</span></div>
+      <div class="bar"><span class="name">EWMA</span><span class="track"><span class="fill" style="width:74.8%;display:block"></span></span><span class="val">0.3454</span></div>
+      <div class="bar"><span class="name">HAR</span><span class="track"><span class="fill" style="width:78.2%;display:block"></span></span><span class="val">0.3612</span></div>
+      <div class="bar"><span class="name">Naive</span><span class="track"><span class="fill" style="width:86.4%;display:block"></span></span><span class="val">0.3987</span></div>
+      <div class="bar"><span class="name">Ledoit-Wolf</span><span class="track"><span class="fill" style="width:100.0%;display:block"></span></span><span class="val">0.4616</span></div>
+    </div>
+    <div class="legend"><span><i class="m"></i>ML model</span><span><i></i>Traditional</span><span><i class="c"></i>Combination</span><span>Bars start at zero.</span></div>
+    <p>GJR-GARCH leads on QLIKE and on MSE of variance. The ML models and the combination sit close behind. The fold-to-fold standard deviation of QLIKE is 0.21 to 0.54, far larger than the gaps between the top models.</p>
 
     <h3>Volatility error (RMSE, lower is better)</h3>
-    <div class="bars" role="img" aria-label="Volatility RMSE ranking: LSTM and XGBoost 0.071 best, naive 0.083 worst">
-      <div class="bar ml"><span class="name">LSTM</span><span class="track"><span class="fill" style="width:85.4%;display:block"></span></span><span class="val">0.0712</span></div>
-      <div class="bar ml"><span class="name">XGBoost</span><span class="track"><span class="fill" style="width:85.4%;display:block"></span></span><span class="val">0.0712</span></div>
-      <div class="bar ml"><span class="name">Random Forest</span><span class="track"><span class="fill" style="width:86.9%;display:block"></span></span><span class="val">0.0725</span></div>
+    <div class="bars" role="img" aria-label="Volatility RMSE ranking, lower is better. Combination with XGBoost 0.0697 best, naive and Ledoit-Wolf 0.0834 worst">
+      <div class="bar combo"><span class="name">Combo +XGBoost</span><span class="track"><span class="fill" style="width:83.6%;display:block"></span></span><span class="val">0.0697</span></div>
+      <div class="bar ml"><span class="name">XGBoost</span><span class="track"><span class="fill" style="width:85.1%;display:block"></span></span><span class="val">0.0710</span></div>
+      <div class="bar combo"><span class="name">Combo HAR+GARCH</span><span class="track"><span class="fill" style="width:86.0%;display:block"></span></span><span class="val">0.0717</span></div>
+      <div class="bar ml"><span class="name">LSTM</span><span class="track"><span class="fill" style="width:86.1%;display:block"></span></span><span class="val">0.0718</span></div>
+      <div class="bar ml"><span class="name">Random Forest</span><span class="track"><span class="fill" style="width:86.8%;display:block"></span></span><span class="val">0.0724</span></div>
       <div class="bar"><span class="name">HAR</span><span class="track"><span class="fill" style="width:87.3%;display:block"></span></span><span class="val">0.0728</span></div>
+      <div class="bar"><span class="name">GJR-GARCH</span><span class="track"><span class="fill" style="width:88.0%;display:block"></span></span><span class="val">0.0734</span></div>
       <div class="bar"><span class="name">GARCH</span><span class="track"><span class="fill" style="width:89.7%;display:block"></span></span><span class="val">0.0748</span></div>
       <div class="bar"><span class="name">EWMA</span><span class="track"><span class="fill" style="width:93.6%;display:block"></span></span><span class="val">0.0781</span></div>
+      <div class="bar"><span class="name">Ledoit-Wolf</span><span class="track"><span class="fill" style="width:100.0%;display:block"></span></span><span class="val">0.0834</span></div>
       <div class="bar"><span class="name">Naive</span><span class="track"><span class="fill" style="width:100.0%;display:block"></span></span><span class="val">0.0834</span></div>
     </div>
-    <div class="legend"><span><i class="m"></i>ML model</span><span><i></i>Traditional</span><span>Bars are scaled to the worst model.</span></div>
-    <p>LSTM and XGBoost cut error by about 15% against naive. The spread between folds is about 0.05, so the gap between LSTM, XGBoost, RF, HAR and GARCH is inside the noise. Say "competitive with or slightly better", not "wins". On the 80 portfolios never used in training the picture is the same (LSTM 0.072, naive 0.085).</p>
+    <p>By RMSE, the XGBoost-HAR-GARCH combination is first (0.0697) and XGBoost is the best single model (0.0710). Standard deviation across folds is about 0.04 to 0.05, so the ranking of the top six is inside the noise. Directional accuracy is highest for the LSTM at 68%; the others are between 62% and 67% (naive has no direction to score). Mean absolute error tells a similar story to RMSE. The ranking depends on which loss you pick, which is why we named QLIKE in advance.</p>
+    <p>On the 80 held-out portfolios the picture is the same. QLIKE: GJR 0.288, LSTM 0.305, XGBoost 0.312, naive 0.409.</p>
+
+    <h3>Is any ML gain significant?</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>ML model (QLIKE)</th><th>vs best baseline (GJR), raw p</th><th>vs naive, raw p</th><th>vs naive, Holm p</th></tr></thead>
+      <tbody>
+        <tr><td>Random Forest</td><td class="num">0.362</td><td class="num">0.007</td><td class="num">0.074</td></tr>
+        <tr><td>XGBoost</td><td class="num">0.531</td><td class="num">0.001</td><td class="num">0.015</td></tr>
+        <tr><td>LSTM</td><td class="num">0.548</td><td class="num">0.001</td><td class="num">0.008</td></tr>
+      </tbody></table></div>
+    <p>Reading it: nobody beats GJR (the p-values are nowhere near 0.05). XGBoost and the LSTM clearly beat naive volatility even after correcting for multiple tests. The Random Forest does not clear the corrected threshold. The 90% confidence set contains every model except naive under QLIKE.</p>
 
     <h3>Drawdown probability (Brier score, lower is better)</h3>
-    <div class="bars" role="img" aria-label="Drawdown Brier ranking: LSTM 0.207 best, Ledoit-Wolf 0.242 worst">
-      <div class="bar ml"><span class="name">LSTM</span><span class="track"><span class="fill" style="width:85.5%;display:block"></span></span><span class="val">0.2069</span></div>
-      <div class="bar ml"><span class="name">Random Forest</span><span class="track"><span class="fill" style="width:86.0%;display:block"></span></span><span class="val">0.2082</span></div>
-      <div class="bar ml"><span class="name">XGBoost</span><span class="track"><span class="fill" style="width:87.9%;display:block"></span></span><span class="val">0.2126</span></div>
+    <div class="bars" role="img" aria-label="Drawdown Brier ranking, lower is better. Simulated drawdown with logistic correction 0.2046 best, Ledoit-Wolf 0.2420 worst">
+      <div class="bar"><span class="name">Simulated DD + logistic</span><span class="track"><span class="fill" style="width:84.5%;display:block"></span></span><span class="val">0.2046</span></div>
+      <div class="bar"><span class="name">Simulated DD</span><span class="track"><span class="fill" style="width:84.7%;display:block"></span></span><span class="val">0.2050</span></div>
+      <div class="bar ml"><span class="name">Random Forest</span><span class="track"><span class="fill" style="width:85.2%;display:block"></span></span><span class="val">0.2061</span></div>
+      <div class="bar ml"><span class="name">LSTM</span><span class="track"><span class="fill" style="width:85.2%;display:block"></span></span><span class="val">0.2062</span></div>
+      <div class="bar combo"><span class="name">Combo +XGBoost</span><span class="track"><span class="fill" style="width:85.5%;display:block"></span></span><span class="val">0.2068</span></div>
+      <div class="bar ml"><span class="name">XGBoost</span><span class="track"><span class="fill" style="width:86.8%;display:block"></span></span><span class="val">0.2101</span></div>
       <div class="bar"><span class="name">HAR</span><span class="track"><span class="fill" style="width:88.2%;display:block"></span></span><span class="val">0.2134</span></div>
+      <div class="bar combo"><span class="name">Combo HAR+GARCH</span><span class="track"><span class="fill" style="width:88.6%;display:block"></span></span><span class="val">0.2144</span></div>
+      <div class="bar"><span class="name">GJR-GARCH</span><span class="track"><span class="fill" style="width:90.7%;display:block"></span></span><span class="val">0.2196</span></div>
       <div class="bar"><span class="name">Base rate</span><span class="track"><span class="fill" style="width:90.9%;display:block"></span></span><span class="val">0.2199</span></div>
       <div class="bar"><span class="name">GARCH</span><span class="track"><span class="fill" style="width:91.9%;display:block"></span></span><span class="val">0.2225</span></div>
       <div class="bar"><span class="name">Naive</span><span class="track"><span class="fill" style="width:92.1%;display:block"></span></span><span class="val">0.2229</span></div>
+      <div class="bar"><span class="name">EWMA</span><span class="track"><span class="fill" style="width:92.4%;display:block"></span></span><span class="val">0.2237</span></div>
       <div class="bar"><span class="name">Ledoit-Wolf</span><span class="track"><span class="fill" style="width:100.0%;display:block"></span></span><span class="val">0.2420</span></div>
     </div>
-    <p>"Base rate" always predicts the training-set frequency of a 5% drawdown (about 33%) and scores 0.220. After stronger regularisation all three ML models beat it, but only by 0.007 to 0.013, in 5 of 6 test years each. For ranking risky periods (ROC-AUC) GARCH is best at 0.632, ahead of the LSTM (0.625), and the RF and XGBoost are lower (about 0.58). The mean predicted drawdown rate follows the realised rate year by year for the ML models; every model over-predicts in 2023, when only 12% of portfolios had a 5% drawdown.</p>
+    <p>The simulated-drawdown models are best (0.2046 with the logistic correction, 0.2050 without), then the Random Forest (0.2061) and LSTM (0.2062). All beat the base rate (0.2199). The simulation is also well calibrated: it predicts 0.335 on average against a realised 0.318, where plain GARCH predicts 0.452. The ML models are equally well calibrated at about 0.33. But the simulation's edge over GARCH (raw p 0.034) and over the base rate (raw p 0.013) does not survive Holm correction (0.101 and 0.052). For ranking risky periods (ROC-AUC), GJR is best at 0.644, then the XGBoost-HAR-GARCH combination 0.634, LSTM 0.632, GARCH 0.632, XGBoost 0.616 and Random Forest 0.607. Held-out portfolios: simulated drawdown 0.2023, Random Forest 0.2035.</p>
 
-    <h3>95% VaR: do losses exceed the line 5% of the time?</h3>
+    <h3>95% VaR</h3>
     <div class="tablewrap"><table>
-      <thead><tr><th>Model</th><th>Average exceedance</th><th>Lowest-highest year</th><th>Years Kupiec rejects (of 6)</th></tr></thead>
+      <thead><tr><th>Model</th><th>Pinball loss</th><th>Avg exceedance</th><th>Yearly range</th><th>Kupiec rejects (of 6 years)</th><th>Avg exceedance, calibrated</th><th>Yearly range, calibrated</th></tr></thead>
       <tbody>
-        <tr><td><b>LSTM</b></td><td class="num">4.4%</td><td class="num">1.5%-7.6%</td><td class="num">6/6</td></tr>
-        <tr><td>GARCH</td><td class="num">4.6%</td><td class="num">2.0%-8.1%</td><td class="num">5/6</td></tr>
-        <tr><td>Ledoit-Wolf</td><td class="num">4.9%</td><td class="num">3.0%-8.8%</td><td class="num">5/6</td></tr>
-        <tr><td><b>XGBoost</b></td><td class="num">5.3%</td><td class="num">2.2%-8.5%</td><td class="num">6/6</td></tr>
-        <tr><td>EWMA</td><td class="num">5.5%</td><td class="num">2.5%-8.1%</td><td class="num">5/6</td></tr>
-        <tr><td>Historical VaR</td><td class="num">5.9%</td><td class="num">3.8%-11.1%</td><td class="num">6/6</td></tr>
-        <tr><td>Naive</td><td class="num">6.0%</td><td class="num">2.8%-8.8%</td><td class="num">6/6</td></tr>
-        <tr><td>Parametric VaR</td><td class="num">6.3%</td><td class="num">2.8%-9.5%</td><td class="num">5/6</td></tr>
+        <tr><td>GJR-GARCH</td><td class="num">0.001367</td><td class="num">4.7%</td><td class="num">2.0% to 8.1%</td><td class="num">5/6</td><td class="num">4.6%</td><td class="num">2.9% to 7.2%</td></tr>
+        <tr><td>Combo +XGBoost</td><td class="num">0.001384</td><td class="num">5.0%</td><td class="num">2.3% to 8.2%</td><td class="num">5/6</td><td class="num">4.7%</td><td class="num">3.1% to 7.5%</td></tr>
+        <tr><td>GARCH</td><td class="num">0.001392</td><td class="num">4.6%</td><td class="num">2.0% to 8.1%</td><td class="num">5/6</td><td class="num">4.6%</td><td class="num">2.8% to 7.3%</td></tr>
+        <tr><td>FHS</td><td class="num">0.001394</td><td class="num">5.3%</td><td class="num">2.4% to 8.9%</td><td class="num">6/6</td><td class="num">4.7%</td><td class="num">3.0% to 7.7%</td></tr>
+        <tr><td><b>XGBoost</b></td><td class="num">0.001411</td><td class="num">5.8%</td><td class="num">3.0% to 8.4%</td><td class="num">6/6</td><td class="num">4.8%</td><td class="num">2.6% to 7.6%</td></tr>
+        <tr><td><b>LSTM</b></td><td class="num">0.001457</td><td class="num">5.6%</td><td class="num">2.3% to 10.7%</td><td class="num">6/6</td><td class="num">4.9%</td><td class="num">2.3% to 7.8%</td></tr>
+        <tr><td>Historical VaR</td><td class="num">0.001479</td><td class="num">5.9%</td><td class="num">3.8% to 11.1%</td><td class="num">6/6</td><td class="num">4.9%</td><td class="num">3.7% to 7.9%</td></tr>
+        <tr><td>Naive</td><td class="num">0.001406</td><td class="num">6.0%</td><td class="num">2.8% to 8.8%</td><td class="num">6/6</td><td class="num">4.9%</td><td class="num">3.1% to 7.7%</td></tr>
       </tbody></table></div>
-    <p>Average pinball loss is about 0.0014 for everyone, so accuracy is a tie. Averages look close to 5%, but the yearly rate swings between about 1.5% and 11%, and the pooled Kupiec test rejects in most years for every model. Pooled tests overstate the sample (exceedances are dependent across portfolios), yet the honest summary is: no model is reliably calibrated year to year. The XGBoost and LSTM quantile heads stopped training very early (4 boosting rounds, 1 epoch in the final models), so they should not be presented as better VaR models.</p>
+    <p>Pinball loss is about 0.0014 for everyone, so accuracy is nearly a tie (GJR is lowest at 0.001367). The average raw exceedance is close to 5% for some models and higher for others, but yearly rates swing between about 2% and 11%. The pooled Kupiec test rejects in most years for most models. That test treats about 20,000 portfolio-days per year as independent, which they are not. The date-clustered test does not reject the average rate for any model (p between 0.27 and 0.95). After calibration, average exceedance is between 4.6% and 4.9% for every model, with a narrower yearly range, and pinball loss is roughly unchanged.</p>
+    <p><b>Clustering of misses.</b> A good VaR should not miss several days in a row. In Round 3 the LSTM's VaR failed the independence test on 49% of portfolios. In Round 4 that fell to 6% (2.5% after calibration). For most other models 1% to 3% of portfolios fail.</p>
+
+    <h3>Calm versus stress</h3>
+    <p>Splitting the test dates by India VIX (above or below its median in the training period) gives 128 stress dates and 205 calm dates. In stress the traditional models lead on volatility RMSE (GJR 0.108, GARCH 0.113) with the combination and LSTM at 0.114 to 0.115. In calm periods XGBoost leads (0.048), with the combination and HAR next (0.049). No regime test is significant, and regimes are mixed up with the test year, so treat this as a pattern worth knowing, not a conclusion.</p>
+  </section>
+
+  <section id="r3r4">
+    <span class="eyebrow">Round 3 to Round 4</span>
+    <h2>Did adding HAR and GARCH inputs help the ML models?</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Model</th><th>Vol QLIKE</th><th>Vol RMSE</th><th>Drawdown AUC</th><th>Drawdown Brier</th></tr></thead>
+      <tbody>
+        <tr><td><b>LSTM</b></td><td class="num">0.3207 to 0.2993</td><td class="num">0.0746 to 0.0718</td><td class="num">0.6061 to 0.6318</td><td class="num">0.2174 to 0.2062</td></tr>
+        <tr><td><b>XGBoost</b></td><td class="num">0.3172 to 0.3057</td><td class="num">0.0714 to 0.0710</td><td class="num">0.5839 to 0.6155</td><td class="num">0.2128 to 0.2101</td></tr>
+        <tr><td><b>Random Forest</b></td><td class="num">0.3408 to 0.3378</td><td class="num">0.0725 to 0.0724</td><td class="num">0.5818 to 0.6069</td><td class="num">0.2082 to 0.2061</td></tr>
+      </tbody></table></div>
+    <p>Most metrics improved, with the LSTM gaining the most. The VaR pinball loss barely moved. But none of the 8 pre-registered Round 4 versus Round 3 tests is significant (raw p between 0.13 and 0.63). So the improvement is consistent in direction but not proven. We also have not re-run the Round 4 setup with other seeds. For the Round 3 setup, seeds 1 and 2 moved the LSTM noticeably, so some of the LSTM's change could be seed noise.</p>
+  </section>
+
+  <section id="claims">
+    <span class="eyebrow">Be precise about it</span>
+    <h2>What we can claim and what we cannot</h2>
+    <div class="grid">
+      <div class="panel"><h3>We can claim</h3>
+        <ul class="tight" style="font-size:.92rem;color:var(--muted)">
+          <li>ML is competitive with strong traditional models at a 21-day horizon.</li>
+          <li>XGBoost and the LSTM beat naive volatility on QLIKE, significant after Holm correction (p 0.015 and 0.008).</li>
+          <li>The evaluation is leak-free by design: time-based folds, a 21-day purge, scalers fit on training data, tests, pre-registered choices.</li>
+          <li>Adding HAR and GARCH forecasts as inputs improved most ML metrics.</li>
+          <li>The simulated-drawdown model gives the best-calibrated drawdown probabilities.</li>
+          <li>A simple online calibration brings average VaR exceedance to 4.6% to 4.9%.</li>
+          <li>The rankings change with the loss, and this is shown openly.</li>
+        </ul></div>
+      <div class="panel"><h3>We cannot claim</h3>
+        <ul class="tight" style="font-size:.92rem;color:var(--muted)">
+          <li>That ML beats GARCH, GJR or HAR. No test supports it.</li>
+          <li>That the Round 4 improvement over Round 3 is real. None of the 8 tests is significant.</li>
+          <li>That the simulated-drawdown edge is real. It does not survive Holm correction.</li>
+          <li>That any model gives a calibrated VaR in every year or regime.</li>
+          <li>That regime patterns (traditional better in stress, ML in calm) hold. No test is significant.</li>
+          <li>That results generalize beyond Indian large caps, 2010 to 2026, or to real trading.</li>
+          <li>That the deployed app models are better than the walk-forward models. They are for demonstration.</li>
+        </ul></div>
+    </div>
   </section>
 
   <section id="limits">
     <span class="eyebrow">Be upfront about these</span>
     <h2>Limitations</h2>
     <ul class="tight">
-      <li><b>Small effective sample.</b> Since 2010 there are only about 190 non-overlapping 21-day periods, and all portfolios share the same market days. 400 portfolios add compute, not much independent information.</li>
-      <li><b>No tuning, one seed.</b> Hyperparameters were set once by reasoning (tree-leaf sizes were raised after the first run showed the Random Forest overfitting). Better settings might move the ranking.</li>
-      <li><b>Survivorship.</b> The universe is today's large caps. Companies that fell out of the index are missing.</li>
-      <li><b>Daily rebalancing</b> to fixed weights is assumed. Real portfolios drift.</li>
-      <li><b>Delayed, sometimes wrong data</b> from Yahoo. Bad prints are filtered but others may remain.</li>
-      <li><b>Pooled Kupiec tests</b> overstate sample size, so read them as a warning, not a precise verdict.</li>
-      <li><b>Data freshness.</b> The app shows the latest delayed daily close in the local cache; it is refreshed on demand from the command line, not in real time.</li>
+      <li><b>Small effective sample.</b> Only about 190 independent 21-day periods exist since 2010, and portfolios share market days. Fold-to-fold variance is large and 400 portfolios add compute, not much independent information.</li>
+      <li><b>Low statistical power.</b> About 330 test dates cannot separate the leading models. The DM, confidence-set and coverage tests also assume stationary loss differences, which expanding windows do not guarantee.</li>
+      <li><b>No tuning, one seed.</b> Hyperparameters were set once by reasoning. The Round 4 setup has not been re-seeded. For the Round 3 setup the LSTM moved noticeably across seeds (vol RMSE 0.070 to 0.075, Brier 0.208 to 0.217) while XGBoost and RF barely moved.</li>
+      <li><b>Deployed models.</b> The deployed LSTM's volatility and drawdown heads stop at epoch 1. The app's models are for demonstration, and all reported numbers come from the walk-forward fold models.</li>
+      <li><b>Test of independence in VaR.</b> The pre-registered date-level DQ test rejects too often in simulation (12% to 40% at a nominal 5%), so its results are descriptive only. Pooled Kupiec tests overstate sample size, so the date-clustered test is the better guide.</li>
+      <li><b>Data.</b> Yahoo data is delayed and occasionally wrong (bad prints are zeroed and logged). Today's large caps imply survivorship bias. There is no bond asset. Only US macro series are used. Portfolios are rebalanced daily.</li>
+      <li><b>Forecast log.</b> Scores from a handful of saved forecasts are anecdotes, not evidence.</li>
       <li>Not investment advice. Built for study and presentation.</li>
     </ul>
   </section>
 
+  <div class="part">
+    <span class="eyebrow">Part 3</span>
+    <h2 style="font-size:1.9rem">Presenting it</h2>
+    <p class="lead">A demo script, a 15 minute slide outline with speaker notes, and the questions an examiner is likely to ask.</p>
+  </div>
+
+  <section id="demo">
+    <span class="eyebrow">Live demo</span>
+    <h2>Dashboard demo script (about 3 minutes)</h2>
+    <p>Start it with <code>source .venv/bin/activate</code> then <code>streamlit run app/streamlit_app.py</code>. The four views are chosen with the radio buttons at the top. Everything uses the latest delayed daily close in the local cache. It is not a live feed.</p>
+    <div class="slides">
+      <div class="slide"><span class="time">View 1</span><h3>Forecast</h3>
+        <p><b>Click.</b> In the sidebar pick 4 or 5 tickers (or type some, for example INFY, SBIN), choose an ML model, then read the three predictions. Look at the risk band and the "Predicted volatility by model" chart. Type a fake ticker to show it is handled gracefully. Optionally press "Save forecast to log".</p>
+        <p><b>Say.</b> "You enter any NSE portfolio. We predict volatility, drawdown probability and VaR for the next 21 trading days, show a Low to Very high risk band, and put the baselines next to the ML model. The model never saw this exact portfolio. It learned from 400 random ones."</p></div>
+      <div class="slide"><span class="time">View 2</span><h3>Backtest</h3>
+        <p><b>Click.</b> Choose "Stored portfolio" or "Sidebar portfolio", then pick a past date from 2020 onwards, for example around March 2020. Compare each model's prediction with what happened.</p>
+        <p><b>Say.</b> "This shows what each year's walk-forward model would have predicted on that date, using only earlier data, next to the outcome. It is the same honest setup as our evaluation. The deployed models are never used for past dates. Notice that some models miss in a crash too. That is the result, not a bug."</p></div>
+      <div class="slide"><span class="time">View 3</span><h3>Risk breakdown</h3>
+        <p><b>Click.</b> Open the volatility contribution and tail-loss contribution charts, then the stress replay.</p>
+        <p><b>Say.</b> "This is descriptive, not a forecast. It shows which holdings drive the portfolio's volatility and its tail loss, and replays today's weights through four past Nifty drawdowns: the 2013 taper tantrum, 2018 IL&amp;FS, COVID 2020 and the 2021 to 2022 sell-off. The tail split uses only about 13 tail days, so read it loosely."</p></div>
+      <div class="slide"><span class="time">View 4</span><h3>Forecast log</h3>
+        <p><b>Click.</b> Open the saved forecasts and the scores table.</p>
+        <p><b>Say.</b> "Saved forecasts are scored against reality: VaR after one trading day, volatility and drawdown after 21. A handful of scores is an anecdote, not evidence. The real evidence is the walk-forward evaluation." Note that the log lives in <code>data/forecast_log.csv</code>, and deleting <code>data/</code> deletes it.</p></div>
+    </div>
+    <div class="callout">Demo hygiene. Run the demo once beforehand so the cache is warm. If asked about the deployed XGBoost VaR head: it now uses the median round count of the six fold models (388), because the deployed fit's own validation curve picked 2 rounds. This affects the app only. No evaluation result changed.</div>
+  </section>
+
+  <section id="talk">
+    <span class="eyebrow">Suggested 15 minute flow</span>
+    <h2>Slide-by-slide outline with speaker notes</h2>
+    <p>Who says what is up to the team. Each slide has one idea. Times add to 15 minutes. If questions come out of the same slot, cut the demo to two views and merge slides 1 and 2.</p>
+    <div class="slides">
+      <div class="slide"><span class="time">0:00 · 1 min</span><h3>1. The question</h3><p><b>Show.</b> Title, the three targets with the 40/40/20 portfolio example.</p><p><b>Say.</b> Investors want to know how risky their portfolio will be next month. We predict three risk numbers 21 trading days ahead and ask whether ML does it better than traditional models.</p></div>
+      <div class="slide"><span class="time">1:00 · 1 min</span><h3>2. What the three targets mean</h3><p><b>Show.</b> Volatility, drawdown of 5% or more, 95% VaR.</p><p><b>Say.</b> Volatility is how bumpy, drawdown is how far from the peak, VaR is a loss that should be exceeded one day in twenty. Risk is predictable because it persists, unlike returns.</p></div>
+      <div class="slide"><span class="time">2:00 · 1 min</span><h3>3. Data and portfolios</h3><p><b>Show.</b> Pipeline strip. 45 NSE tickers, 2010 to 2026, India VIX and US macro with real publication lags.</p><p><b>Say.</b> 400 random portfolios of 3 to 15 assets teach the model about portfolios in general. 80 are held out and never trained on.</p></div>
+      <div class="slide"><span class="time">3:00 · 1.5 min</span><h3>4. How we prevented cheating</h3><p><b>Show.</b> Walk-forward diagram with the purge gap, and the leakage rules.</p><p><b>Say.</b> Six expanding folds testing 2020 to 2025 and into 2026, a 21-day purge, scalers fit on training data only, 194 tests including leakage tests. All Round 4 choices were pre-registered.</p></div>
+      <div class="slide"><span class="time">4:30 · 1.5 min</span><h3>5. The contenders</h3><p><b>Show.</b> Two columns: naive, EWMA, HAR, GARCH, GJR, FHS, simulated drawdown against RF, XGBoost, LSTM, plus the two combinations.</p><p><b>Say.</b> One sentence each. The Round 4 idea: give the ML models the HAR and GARCH forecasts as inputs so the comparison is fair.</p></div>
+      <div class="slide"><span class="time">6:00 · 1 min</span><h3>6. How we judge them</h3><p><b>Show.</b> Metric table: RMSE, MAE, directional accuracy, QLIKE, Brier, AUC, pinball, exceedance. Then DM with Holm and the confidence set.</p><p><b>Say.</b> We report the synopsis metrics and also QLIKE, which is robust to a noisy volatility yardstick. Significance is tested on about 330 test dates with multiple-testing correction.</p></div>
+      <div class="slide"><span class="time">7:00 · 1.5 min</span><h3>7. Volatility results</h3><p><b>Show.</b> The QLIKE bar chart and the RMSE bar chart.</p><p><b>Say.</b> GJR-GARCH is best on QLIKE (0.281). The combination is best on RMSE (0.0697). The LSTM has the best directional accuracy at 68%. ML is competitive, not best.</p></div>
+      <div class="slide"><span class="time">8:30 · 1 min</span><h3>8. Drawdown and VaR results</h3><p><b>Show.</b> Brier bars, then the VaR table.</p><p><b>Say.</b> The simulated-drawdown model has the best Brier (0.2046) but its edge does not survive correction. VaR pinball loss is about 0.0014 for everyone. After calibration the average exceedance is 4.6% to 4.9%.</p></div>
+      <div class="slide"><span class="time">9:30 · 1 min</span><h3>9. Significance and Round 3 to Round 4</h3><p><b>Show.</b> The DM table and the Round 3 to Round 4 table.</p><p><b>Say.</b> XGBoost and the LSTM beat naive significantly, nobody beats GJR significantly. Adding HAR and GARCH inputs improved most ML metrics but none of the 8 tests is significant.</p></div>
+      <div class="slide"><span class="time">10:30 · 1 min</span><h3>10. Claims and limits</h3><p><b>Show.</b> The two-column claim table, then the top limitations.</p><p><b>Say.</b> We can claim competitive and leak-free. We cannot claim ML beats the best traditional model. About 190 independent periods, no tuning, one seed.</p></div>
+      <div class="slide"><span class="time">11:30 · 3 min</span><h3>11. Live dashboard</h3><p><b>Show.</b> The four views, following the demo script above.</p><p><b>Say.</b> Forecast, Backtest, Risk breakdown, Forecast log. Keep the narration to what each view is for, not the numbers on screen.</p></div>
+      <div class="slide"><span class="time">14:30 · 0.5 min</span><h3>12. Takeaway</h3><p><b>Show.</b> One sentence.</p><p><b>Say.</b> "Rigorous comparison mattered more than winning. We found ML is competitive with strong econometric models, and the data we have cannot say it is better."</p></div>
+    </div>
+    <div class="panel"><h3>Where the supporting material is</h3>
+      <p>Interactive charts are in <code>reports/figures/</code> (open the HTML files in a browser). Full tables are in <code>reports/comparison.md</code> and <code>reports/round4/tierB/</code>.</p></div>
+  </section>
+
   <section id="qa">
     <span class="eyebrow">Prepare for these</span>
-    <h2>Likely questions</h2>
-    <details><summary>Why train on random portfolios instead of one real portfolio?</summary><p>So one model serves any user portfolio. The inputs describe the portfolio's own behaviour (its volatility, drawdown, correlations), not which stocks it holds.</p></details>
-    <details><summary>Why did ML not win clearly?</summary><p>Volatility is already well explained by recent volatility, which the simple models use directly. ML adds a little from correlations and market conditions. With about 190 independent periods there is limited room to learn more. Be careful comparing with papers that report 90%+ accuracy. Those usually predict prices, which is a different and easier-to-misjudge task.</p></details>
-    <details><summary>How do you know there is no data leakage?</summary><p>Targets only use the 21 days after the prediction date. Training ends 21 days before each test year. Scalers are fit on training data. Tests alter future data and confirm earlier features and predictions do not change.</p></details>
-    <details><summary>Why is a 33% drawdown rate so high?</summary><p>Because the window is 21 days and the threshold is 5% peak-to-trough, which equity portfolios hit often, especially in 2020 and 2022. The models are judged against that base rate.</p></details>
-    <details><summary>Why is the LSTM a single layer?</summary><p>The deadline was short. A small network is enough here, and results showed no need for more. One network predicts all three outputs.</p></details>
-    <details><summary>Does the app retrain when I click?</summary><p>No. It loads saved models, builds the same features from cached prices and runs predictions. It also fits one GARCH live for comparison.</p></details>
-    <details><summary>Is it live data?</summary><p>No. Prices are cached from Yahoo and end at the last complete trading day. Refresh with the fetch command.</p></details>
+    <h2>Likely examiner questions</h2>
+    <details><summary>Why doesn't ML win?</summary><p>Volatility is largely explained by recent volatility, which HAR and GARCH use directly and efficiently. Published work finds HAR and GARCH-type models are hard to beat at a one-month horizon with daily data. With about 190 independent periods there is little room to learn more. ML does add something (the XGBoost combination has the best RMSE), and it beats naive volatility significantly, but it does not beat the best traditional model. Papers claiming 90%+ accuracy usually predict prices, which is a different task.</p></details>
+    <details><summary>How did you prevent leakage?</summary><p>Features at day t use data up to t only, and targets use t+1 to t+21 only. Folds are time-based with a 21-day purge so overlapping targets cannot cross into the test period. Scalers are fit on training rows only, macro series are lagged by their publication delay, and the HAR and GARCH inputs are re-estimated once a year on earlier data only. Tests change the future and confirm nothing at or before t moves.</p></details>
+    <details><summary>Why synthetic portfolios?</summary><p>So one model serves any user portfolio. The inputs describe the portfolio's own behaviour (volatility, drawdown, correlation), not which stocks it holds. The limitation is that portfolios share the same market days, so 400 portfolios do not mean 400 independent samples. We also scored 80 held-out portfolios, and the picture was the same.</p></details>
+    <details><summary>Is six test years enough?</summary><p>No, not to separate close models. There are about 190 independent 21-day periods since 2010 and about 330 test dates. That is why the confidence set keeps almost every model, and why we report which gaps are significant instead of ranking by the third decimal. It is enough to show ML is competitive and to show that a big ML advantage does not exist in this data.</p></details>
+    <details><summary>Why QLIKE?</summary><p>The realized volatility we compare against is a noisy measurement. QLIKE (and MSE on variance) still rank models correctly under that noise, while RMSE on volatility can favour the wrong model. We chose it as the main ranking loss before the run and still report RMSE, MAE and directional accuracy, because the synopsis asks for them. The ranking does differ: the combination wins on RMSE, GJR on QLIKE.</p></details>
+    <details><summary>Are the combinations a form of cheating?</summary><p>They were picked after we had seen the Round 3 ranks, and we disclose that. They are plain equal-weight averages with nothing fitted. They are also excluded from the pool of "best baseline" in the tests, so they do not make the comparison easier or harder for ML.</p></details>
+    <details><summary>Why is the drawdown base rate about a third?</summary><p>Because the window is 21 days and the threshold is 5% peak-to-trough, which equity portfolios hit often. In the test years about 32% of rows had such a drawdown. All models are judged against that base rate (Brier 0.2199).</p></details>
+    <details><summary>The simulated drawdown model has the best Brier. Is it the winner?</summary><p>It is first in the table and best calibrated, but its edge over GARCH (raw p 0.034) and over the base rate (raw p 0.013) does not survive Holm correction (0.101 and 0.052). We report it as best on the table and not demonstrably better.</p></details>
+    <details><summary>Does the VaR work?</summary><p>Pinball loss is about 0.0014 for every model. Raw yearly exceedance rates swing between about 2% and 11% for all of them. The pooled Kupiec test rejects often but is overpowered. The date-clustered test does not reject the average rate for any model. Online calibration brings the average to 4.6% to 4.9%, with no promise for a single year or regime.</p></details>
+    <details><summary>Why did you not tune the models or use more seeds?</summary><p>Tuning on the test years would inflate performance, and tuning inside training would multiply the number of choices. We set values once by reasoning, wrote down the choices before the run, and report what came out. Re-seeding the Round 4 setup is a sensible next step. For the Round 3 setup, seeds 1 and 2 moved the LSTM noticeably and XGBoost and RF barely.</p></details>
+    <details><summary>Does the app retrain when I click?</summary><p>No. It loads saved models, builds the same features from cached prices and runs predictions. Past dates in the Backtest view use the walk-forward models trained only on earlier data. The deployed models are for demonstration.</p></details>
+    <details><summary>Can this be used for trading?</summary><p>No. It is a study project with limits listed above, including survivorship bias, no bonds and a short sample. It is not investment advice.</p></details>
+    <details><summary>What would you do next?</summary><p>Re-run the Round 4 ML setup with several seeds, tune hyperparameters inside the training window, add more assets including bonds if history allows, and test a longer sample. These are ideas, not results.</p></details>
   </section>
 
   <section id="selftest">
@@ -469,8 +653,10 @@ many assets:  vol_p^2 = w' * Sigma * w          (Sigma = covariance matrix)</div
     <details><summary>6. Why can't we split the data randomly into train and test?</summary><p>Adjacent days are nearly identical, so random splitting puts near-copies of test rows in training and also lets the model learn from the future. Walk-forward testing mimics real use.</p></details>
     <details><summary>7. What does the 21-day gap protect against?</summary><p>A training row's target covers the next 21 days. Without the gap, the last training rows would contain returns from inside the test period.</p></details>
     <details><summary>8. What is the difference between Random Forest and XGBoost?</summary><p>A forest builds many independent trees and averages them. XGBoost builds trees one after another, each correcting the previous ones' errors.</p></details>
-    <details><summary>9. A model has Brier score 0.22 for drawdown. Is it good?</summary><p>Not by itself. Always guessing the base rate (33%) scores about 0.22. A useful model must score clearly below that. The LSTM (0.207), Random Forest (0.208) and XGBoost (0.213) do, slightly. None of them ranks risky periods better than GARCH (AUC).</p></details>
+    <details><summary>9. A model has Brier score 0.22 for drawdown. Is it good?</summary><p>Not by itself. Always guessing the base rate scores 0.2199. A useful model must score clearly below that. In Round 4 the simulated-drawdown model (0.2046), Random Forest (0.2061), LSTM (0.2062) and XGBoost (0.2101) do, but the gaps are small relative to the year-to-year spread.</p></details>
     <details><summary>10. Why predict log(future vol ÷ current vol) instead of future vol?</summary><p>Volatility persists, so a model asked for the level mostly copies the current value and looks accurate without learning anything. Predicting the change forces it to find real information.</p></details>
+    <details><summary>11. A model beats naive with raw p = 0.001 but we quote Holm p = 0.015. Why?</summary><p>We ran several tests at once. Each extra test raises the chance of a false alarm, so Holm correction raises the p-values to keep the overall error rate controlled. 0.015 is still below 0.05, so the result stands.</p></details>
+    <details><summary>12. Model A has RMSE 0.0697 and model B has QLIKE 0.281. Who is better?</summary><p>It depends on the loss. The two losses can disagree, which is why we picked QLIKE as the main one before running anything. Neither gap is statistically significant against the other.</p></details>
   </section>
 
   <section id="gloss">
@@ -506,25 +692,17 @@ many assets:  vol_p^2 = w' * Sigma * w          (Sigma = covariance matrix)</div
       <dt>Brier score / log-loss</dt><dd>Scores for probability forecasts. Lower is better.</dd>
       <dt>ROC-AUC</dt><dd>Ability to rank events above non-events. 0.5 is chance.</dd>
       <dt>Base rate (climatology)</dt><dd>The overall frequency of an event, used as the "no skill" forecast.</dd>
+      <dt>QLIKE</dt><dd>Volatility error score that is robust to a noisy realized-volatility yardstick. The main ranking loss here.</dd>
+      <dt>Diebold-Mariano test</dt><dd>Tests whether two models' forecast losses differ by more than chance.</dd>
+      <dt>Holm correction</dt><dd>Raises p-values when many tests are run together, so lucky results are not mistaken for real ones.</dd>
+      <dt>Model confidence set</dt><dd>The group of models the data cannot rule out as the best.</dd>
+      <dt>GJR-GARCH</dt><dd>GARCH where falls raise volatility more than rises, here with fat-tailed (Student-t) errors.</dd>
+      <dt>FHS</dt><dd>Filtered historical simulation: a VaR method that uses GARCH-standardized past shocks.</dd>
+      <dt>Pre-registration</dt><dd>Writing down models, metrics and tests before any result exists, so they cannot be chosen after the fact.</dd>
+      <dt>Calibration (VaR)</dt><dd>An online correction that deepens or relaxes VaR forecasts so the miss rate stays near 5% on average.</dd>
+      <dt>Combination forecast</dt><dd>An equal-weight average of several models' forecasts.</dd>
       <dt>Synthetic portfolio</dt><dd>A randomly generated set of tickers and weights used to train a model that generalizes.</dd>
       <dt>Survivorship bias</dt><dd>Using only companies that exist today, which hides the ones that failed or left the index.</dd>
     </dl>
-  </section>
-
-  <section id="talk">
-    <span class="eyebrow">Suggested 10-minute flow</span>
-    <h2>Talk plan</h2>
-    <div class="tablewrap"><table>
-      <thead><tr><th>Time</th><th>Show</th><th>Say</th></tr></thead>
-      <tbody>
-        <tr><td class="time">0:00</td><td>The problem</td><td>Three risk numbers, 21 days ahead. Traditional methods versus ML.</td></tr>
-        <tr><td class="time">1:30</td><td>Pipeline and data</td><td>45 NSE tickers, 400 random portfolios, India VIX and US macro with real publication lags.</td></tr>
-        <tr><td class="time">3:30</td><td>Validation rules</td><td>Walk-forward, 21-day gap, leakage tests. This is why the results are credible.</td></tr>
-        <tr><td class="time">5:00</td><td>Results</td><td>ML competitive, not dominant; differences small. No model keeps 95% VaR at 5% every year. All three ML models slightly beat the drawdown base rate; none beats GARCH on AUC.</td></tr>
-        <tr><td class="time">7:00</td><td>Live app demo</td><td>Enter 4 or 5 tickers, compare model cards, type a fake ticker to show graceful handling. Then the Backtest view: pick a past date and compare each model with what happened.</td></tr>
-        <tr><td class="time">9:00</td><td>Limitations and takeaway</td><td>Small effective sample, no bonds. Rigorous comparison matters more than winning.</td></tr>
-      </tbody></table></div>
-    <div class="panel"><h3>To run the demo</h3>
-      <p><code>source .venv/bin/activate</code> then <code>streamlit run app/streamlit_app.py</code>. Interactive charts for the results are in <code>reports/figures/</code> (open the HTML files in a browser). Full tables are in <code>reports/comparison.md</code>.</p></div>
   </section>
 </div>

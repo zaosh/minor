@@ -120,6 +120,13 @@ def _per_unit(g: pd.DataFrame) -> list[tuple[np.ndarray, np.ndarray]]:
     return list(zip(np.split(hit, start[1:]), np.split(var, start[1:]), strict=True))
 
 
+def share_rejecting(p: np.ndarray, level: float) -> float:
+    """Share of p-values below `level` among the finite ones (NaN = not testable, not counted)."""
+    p = np.asarray(p, dtype=float)
+    ok = np.isfinite(p)
+    return float(np.mean(p[ok] < level)) if ok.any() else np.nan
+
+
 def var_tests_table(preds: pd.DataFrame) -> dict[str, pd.DataFrame]:
     """All Tier A VaR tests for every VaR model (calibrated variants and combos included).
 
@@ -148,7 +155,7 @@ def var_tests_table(preds: pd.DataFrame) -> dict[str, pd.DataFrame]:
                      "n_not_testable": int((~ok).sum()),
                      "share_reject_ind": float(np.mean(pi[ok] < level)) if ok.any() else np.nan,
                      "share_reject_cc": float(np.mean(pc[ok] < level)) if ok.any() else np.nan,
-                     "share_reject_dq": float(np.nanmean(pq < level)) if ok.any() else np.nan,
+                     "share_reject_dq": share_rejecting(pq, level),
                      "pooled_ind_reject_folds": f"{k_ind}/{n_folds}",
                      "pooled_cc_reject_folds": f"{k_cc}/{n_folds}"})
         d = g.assign(hit=(g["y_true"] < g["y_pred"]).astype(float)).groupby("date").agg(

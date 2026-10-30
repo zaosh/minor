@@ -30,9 +30,16 @@ st.set_page_config(page_title="Portfolio Risk Prediction", layout="wide")
 
 def polish(fig: go.Figure, fmt: str | None = None, height: int = 340,
            hover: str = "x unified") -> go.Figure:
-    """Apply the shared chart look: palette, legend on top, light grid, tight margins."""
+    """Apply the shared chart look: palette, legend on top, light grid, tight margins.
+
+    A titled chart gets the title in its own row above the legend so the two never overlap.
+    """
     fig.update_layout(colorway=SERIES, height=height, margin=dict(l=0, r=0, t=48, b=0),
                       legend=dict(orientation="h", y=1.14, x=0, title_text=""), hovermode=hover)
+    if fig.layout.title.text:
+        fig.update_layout(margin_t=88, legend=dict(y=1.02, yanchor="bottom"),
+                          title=dict(x=0, xanchor="left", y=1, yanchor="top", yref="container",
+                                     pad=dict(t=8)))
     fig.update_xaxes(showgrid=False)
     fig.update_yaxes(gridcolor="rgba(128,128,128,0.2)", zeroline=False)
     if fmt:
@@ -53,7 +60,26 @@ def model_label(key: str) -> str:
 
 
 def fmt_pct(x: float | None) -> str:
+    """A fraction as a percentage with one decimal, or "n/a" when missing."""
     return "n/a" if x is None or pd.isna(x) else f"{x:.1%}"
+
+
+def text_table(df: pd.DataFrame, fmts: dict | str, na: str = "–") -> pd.DataFrame:
+    """Format a table as text for display, with `na` for missing values.
+
+    st.dataframe ignores a Styler's na_rep and shows "None" in empty cells, so tables are
+    formatted here instead. `fmts` maps a column to a format string or a callable (a callable
+    also receives missing values); a single string applies to every column.
+    """
+    out = df.astype(object).copy()
+    for col in df.columns:
+        f = fmts if isinstance(fmts, str) else fmts.get(col)
+        if callable(f):
+            out[col] = [f(x) for x in df[col]]
+        else:
+            out[col] = [na if x is None or pd.isna(x) else (f.format(x) if f else str(x))
+                        for x in df[col]]
+    return out
 
 
 def default_weights(tickers: list[str], saved: dict[str, float]) -> list[float]:
@@ -178,10 +204,10 @@ def view_forecast(tickers: list[str], weights: tuple[float, ...], model_key: str
     st.plotly_chart(polish(fig, height=60 + 34 * len(vol_df), hover="closest"), width="stretch")
     with st.expander("All numbers (volatility, drawdown, VaR, expected shortfall)"):
         st.dataframe(
-            cmp_df[["vol_hat", "dd_hat", "var_loss", "es_loss"]].rename(columns={
+            text_table(cmp_df[["vol_hat", "dd_hat", "var_loss", "es_loss"]].rename(columns={
                 "vol_hat": "Volatility", "dd_hat": "P(drawdown >= 5%)",
                 "var_loss": "95% VaR (1-day loss)", "es_loss": "95% expected shortfall (1-day loss)"
-            }).style.format("{:.1%}", na_rep="-"),
+            }), "{:.1%}"),
             width="stretch",
         )
         st.caption("Expected shortfall is the average loss on the worst 5% of days, beyond the "
@@ -239,18 +265,19 @@ def stored_hist(pid: int) -> pd.DataFrame:
     return backtest.stored_history(pid)
 
 
-def _fmt_table(t: pd.DataFrame):
-    return t.rename(index=model_label).rename(columns={
+def _yes_no(x: object) -> str:
+    return "pending" if x is None or pd.isna(x) else ("yes" if x else "no")
+
+
+def _fmt_table(t: pd.DataFrame) -> pd.DataFrame:
+    return text_table(t.rename(index=model_label).rename(columns={
         "vol_pred": "Vol predicted", "vol_real": "Vol realized", "p_drawdown": "P(drawdown >= 5%)",
         "drawdown_occurred": "Drawdown occurred", "max_dd": "Max drawdown",
         "var_pred": "VaR predicted", "es_pred": "Shortfall predicted",
-        "next_return": "Next-day return",
-        "var_exceeded": "VaR exceeded"}).style.format(
+        "next_return": "Next-day return", "var_exceeded": "VaR exceeded"}),
         {"Vol predicted": "{:.1%}", "Vol realized": "{:.1%}", "P(drawdown >= 5%)": "{:.1%}",
          "Max drawdown": "{:.1%}", "VaR predicted": "{:.2%}", "Shortfall predicted": "{:.2%}",
-         "Next-day return": "{:.2%}",
-         "Drawdown occurred": lambda x: "pending" if pd.isna(x) else ("yes" if x else "no")},
-        na_rep="-")
+         "Next-day return": "{:.2%}", "Drawdown occurred": _yes_no, "VaR exceeded": _yes_no})
 
 
 BT_LABELS = {**{k: v + " (ML)" for k, v in MODEL_LABELS.items()}, **BASE_LABELS,
@@ -311,7 +338,9 @@ def view_backtest(tickers: list[str], weights: tuple[float, ...], model_key: str
         return
     h = stored_hist(sel["pid"])
     keys = [m.split(":", 1)[1] for m in h.columns if m.startswith(("vol_hat:", "var_hat:"))]
-    name = st.selectbox("Model for the charts", list(dict.fromkeys(keys)), index=0,
+    keys = list(dict.fromkeys(keys))
+    name = st.selectbox("Model for the charts", keys,  # default: the sidebar's ML model
+                        index=keys.index(model_key) if model_key in keys else 0,
                         format_func=model_label)
     if f"vol_hat:{name}" in h:
         fig = go.Figure()
@@ -352,8 +381,8 @@ def view_log(tickers: list[str], weights: tuple[float, ...], model_key: str) -> 
                  hide_index=True)
     st.subheader("Scores so far")
     summ = forecast_log.summarize_scores(scored)
-    st.dataframe(summ.style.format({"vol_mae": "{:.3f}", "dd_brier": "{:.3f}",
-                                    "var_exceedance": "{:.0%}"}, na_rep="-"), width="stretch")
+    st.dataframe(text_table(summ, {"vol_mae": "{:.3f}", "dd_brier": "{:.3f}",
+                                   "var_exceedance": "{:.0%}"}), width="stretch")
     st.caption("Volatility and drawdown are scored after 21 trading days, VaR after one. With a "
                "handful of forecasts these numbers are anecdotes, not evidence. The log lives in "
                "data/forecast_log.csv; deleting data/ deletes it.")

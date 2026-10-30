@@ -93,6 +93,10 @@ def test_backtest_view_stored_and_typed_portfolio():
     assert not at.exception, at.exception
     assert any("NOT used here" in i.value for i in at.info)
     assert len(at.dataframe) >= 1
+    table = next(d.value for d in at.dataframe if "Vol predicted" in d.value.columns)
+    assert not table.isna().any().any()  # empty cells are shown as text, never as "None"
+    charts = next(s for s in at.selectbox if s.label == "Model for the charts")
+    assert charts.value == "xgboost"  # follows the sidebar's ML model
     src = next(r for r in at.radio if "Sidebar portfolio" in r.options)
     src.set_value("Sidebar portfolio").run()
     assert not at.exception, at.exception

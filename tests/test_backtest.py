@@ -53,6 +53,15 @@ def test_stored_backtest_rejects_leaky_or_misassigned_rows():
         backtest.stored_backtest(0, pd.Timestamp("2020-06-01"), FOLDS, _preds("2021", "2020-03-06"))
 
 
+def test_backtest_table_var_exceeded_is_unknown_without_a_next_return():
+    real = {"vol_fwd": np.nan, "dd_flag": np.nan, "max_dd": np.nan, "r_next": np.nan}
+    models = {"garch": {"vol_hat": 0.2, "var_hat": -0.02}, "rf": {"vol_hat": 0.2}}
+    t = backtest.backtest_table(models, real)
+    assert t.loc["garch", "var_exceeded"] is None and t.loc["rf", "var_exceeded"] is None
+    t = backtest.backtest_table(models, {**real, "r_next": -0.03})
+    assert t.loc["garch", "var_exceeded"] is True and t.loc["rf", "var_exceeded"] is None
+
+
 def test_risk_band():
     q = [0.1, 0.2, 0.3]
     assert [predict.risk_band(v, q) for v in (0.05, 0.15, 0.25, 0.5)] == [
@@ -127,6 +136,46 @@ def test_predict_portfolio_rejects_dates_inside_the_training_period():
     tickers, weights = _stored_portfolio(3)
     with pytest.raises(ValueError, match="Backtest"):
         predict.predict_portfolio(tickers, weights, pd.Timestamp("2022-06-10"))
+
+
+@needs_artifacts
+def test_predict_portfolio_allows_the_label_end_date_itself(monkeypatch):
+    """Its target window starts after the last return used in training, so it is out of sample;
+    the day before is not."""
+    tickers, weights = _stored_portfolio(3)
+    dates = predict.load_data()["returns"].index
+    meta = {**predict.load_meta(), "label_end_date": str(dates[-1].date())}
+    monkeypatch.setattr(predict, "load_meta", lambda: meta)
+    assert predict.predict_portfolio(tickers, weights)["as_of"] == dates[-1]
+    with pytest.raises(ValueError, match="Backtest"):
+        predict.predict_portfolio(tickers, weights, dates[-2])
+
+
+@needs_artifacts
+def test_garch_fallback_ignores_data_after_as_of_before_first_test_day(monkeypatch):
+    """2022-01-04 belongs to fold 2022, whose GARCH cut-off (2022-01-06) lies after the as-of
+    date; the EWMA fallback used when GARCH fails must still stop at the as-of date."""
+    def fail(*args, **kwargs):
+        raise RuntimeError("forced non-convergence")
+
+    monkeypatch.setattr(predict, "garch_forecast", fail)
+    monkeypatch.setattr(predict, "gjr_forecast", fail)
+    tickers, weights = _stored_portfolio(3)
+    as_of = pd.Timestamp("2022-01-04")
+    base = backtest.custom_backtest(tickers, weights, as_of)
+    assert base["as_of"] < pd.Timestamp(backtest.fold_for_date(as_of, backtest.load_folds())
+                                        ["test_start"])
+    d = predict.load_data()
+    returns = d["returns"].copy()
+    after = returns.index > base["as_of"]
+    returns.loc[after] = np.random.default_rng(1).normal(0, 0.05, (after.sum(), returns.shape[1]))
+    monkeypatch.setattr(predict, "load_data",
+                        lambda: {"returns": returns, "market": d["market"], "macro": d["macro"]})
+    changed = backtest.custom_backtest(tickers, weights, as_of)
+    for model, vals in base["models"].items():
+        for key, v in vals.items():
+            if not np.isnan(v):
+                assert changed["models"][model][key] == pytest.approx(v, abs=1e-9), (model, key)
 
 
 @needs_artifacts
