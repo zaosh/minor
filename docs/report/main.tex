@@ -1,47 +1,31 @@
-\documentclass[10pt,twocolumn]{article}
-\usepackage[a4paper,margin=0.75in,columnsep=0.25in]{geometry}
-\usepackage{lmodern}
-\usepackage[T1]{fontenc}
+\documentclass[conference,a4paper]{IEEEtran}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{url}
-\usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+\hyphenation{GARCH}
 
-% --- front-matter placeholders: replace before submission -------------------------------
-\newcommand{\authorblock}{%
-  \textbf{[Author 1 -- name, registration no.]} \quad \textbf{[Author 2]} \quad
-  \textbf{[Author 3]} \quad \textbf{[Author 4]}\\[2pt]
-  Department of [Department], Manipal Institute of Technology, Manipal\\
-  Minor Specialization Mini Project \quad Mentor: \textbf{[Mentor name]}}
-
-% --- plain-rule table helpers (booktabs is not installed) -------------------------------
-\setlength{\parskip}{0pt}
-\setlength{\parindent}{1em}
 \renewcommand{\arraystretch}{1.08}
 \setlength{\tabcolsep}{3.2pt}
-\renewcommand{\topfraction}{0.9}
-\renewcommand{\bottomfraction}{0.9}
-\renewcommand{\textfraction}{0.08}
-\renewcommand{\floatpagefraction}{0.8}
 
-\newcommand{\E}{\mathbb{E}}
 \newcommand{\volf}{\sigma^{\mathrm{fwd}}}
 
 \begin{document}
 
-\twocolumn[
-\begin{center}
-{\Large\bfseries Predicting Portfolio Risk with Machine Learning:\\
-A Walk-Forward Comparison Against GARCH-Type Baselines\\
-on Indian Equities and ETFs\par}
-\vspace{6pt}
-\small\authorblock
-\vspace{8pt}
-\end{center}
-\begin{quote}\small
-\textbf{Abstract---}We ask whether machine learning predicts the risk of a user-defined portfolio
+\title{Predicting Portfolio Risk with Machine Learning: A Walk-Forward Comparison Against GARCH-Type Baselines on Indian Equities and ETFs}
+
+% --- placeholders: replace before submission ---------------------------------------------
+\author{\IEEEauthorblockN{[Author 1]\IEEEauthorrefmark{1}, [Author 2]\IEEEauthorrefmark{1},
+[Author 3]\IEEEauthorrefmark{1}, [Author 4]\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}Department of [Department], Manipal Institute of Technology, Manipal, India\\
+Minor Specialization Mini Project. Mentor: [Mentor name]\\
+Emails: [author emails]}}
+
+\maketitle
+
+\begin{abstract}
+We ask whether machine learning predicts the risk of a user-defined portfolio
 better than established econometric models. Using 45 liquid NSE stocks and ETFs (2010--2026), we
 train Random Forest, XGBoost and a single-layer multi-task LSTM on 400 random portfolios and predict
 three targets over a 21-trading-day horizon: realised volatility, the probability of a drawdown of
@@ -56,9 +40,11 @@ over the baselines is from combining forecasts (lowest RMSE, 0.0697) and from a 
 drawdown model (Brier 0.2046). In a downstream test, sizing a portfolio from any of these forecasts
 brings realised volatility to about 10--11\% against 19\% unscaled, but the models are not reliably
 ranked. We report the evaluation, its limits and the leakage safeguards in full.
-\end{quote}
-\vspace{4pt}
-]
+\end{abstract}
+
+\begin{IEEEkeywords}
+portfolio risk, volatility forecasting, Value-at-Risk, GARCH, LSTM, XGBoost, walk-forward validation
+\end{IEEEkeywords}
 
 \section{Introduction}
 Investors rarely care about the expected return of a portfolio as much as about how bad it can get:
@@ -66,8 +52,8 @@ how volatile it will be next month, how likely a sizeable drawdown is, and how m
 a bad day. Traditional answers come from volatility models such as EWMA, GARCH and HAR, or from
 historical Value-at-Risk (VaR). Machine learning (ML) offers flexible alternatives that can use many
 inputs at once, and several studies report gains for volatility forecasting \cite{christensen2023}.
-Yet the classic evidence is that it is hard to beat a plain GARCH(1,1) out of sample \cite{hansen2005},
-and ML comparisons are often run on one asset, with random splits, or with a weak baseline.
+Yet the classic evidence is that a plain GARCH(1,1) is hard to beat out of sample for exchange rates,
+while for stock returns only models with a leverage effect did better \cite{hansen2005}, and ML comparisons are often run on one asset, with random splits, or with a weak baseline.
 
 This project builds and evaluates a portfolio risk predictor for Indian markets and exposes it in a
 Streamlit dashboard where a user enters tickers and weights. We make three contributions.
@@ -89,7 +75,8 @@ outcomes: does a better volatility forecast give a better volatility-targeted po
 \cite{glosten1993} describe volatility clustering and leverage effects. RiskMetrics' EWMA
 \cite{riskmetrics1996} is a one-parameter special case, and the HAR model \cite{corsi2009} regresses
 future volatility on daily, weekly and monthly averages. Hansen and Lunde \cite{hansen2005} found
-nothing that clearly beat GARCH(1,1) on daily data.
+no model that clearly beat GARCH(1,1) for exchange rates, but evidence that models with a leverage
+effect beat it for stock returns.
 
 \textbf{ML for risk.} Tree ensembles \cite{breiman2001,chen2016} and recurrent networks
 \cite{hochreiter1997} have been applied to volatility and return forecasting
@@ -101,7 +88,8 @@ variance) rank forecasts consistently \cite{patton2011}. Forecast comparison use
 Diebold-Mariano test \cite{dm1995} with a small-sample correction \cite{hln1997}, Holm's
 step-down correction \cite{holm1979} and the model confidence set \cite{hansen2011}. VaR is checked
 with Kupiec's coverage test \cite{kupiec1995} and Christoffersen's independence test
-\cite{christoffersen1998}, and expected shortfall with the joint FZ0 loss \cite{fissler2016}.
+\cite{christoffersen1998}, and expected shortfall with the joint FZ0 loss \cite{patton2019}, which rests on the elicitability
+of the pair \cite{fissler2016}.
 Quantile (pinball) loss follows Koenker and Bassett \cite{koenker1978}. Filtered historical
 simulation \cite{barone1999} and online conformal calibration \cite{gibbs2021} supply a simulation
 baseline and a coverage correction.
@@ -160,7 +148,7 @@ re-estimated once per year on earlier data. Their effect is reported in Section~
 
 \subsection{Traditional baselines}
 \emph{Naive}: current realised volatility. \emph{EWMA} with decay 0.94. \emph{Ledoit-Wolf}: the
-volatility implied by a shrunk covariance matrix \cite{ledoit2004}. \emph{HAR}: OLS on log
+volatility implied by a shrunk covariance matrix \cite{ledoit2004}. \emph{HAR}: a HAR-style OLS on log
 volatility over 21, 63 and 126 days. \emph{GARCH(1,1)} and \emph{GJR-GARCH(1,1) with Student-$t$
 errors}, fitted per portfolio on data before each fold's first test date with parameters then held
 fixed, giving an analytic 21-day forecast. VaR baselines are historical (250 days), parametric
@@ -270,7 +258,7 @@ least reliable at high predicted probabilities.
 \centering\small
 \caption{Drawdown ($\ge5\%$) probability, mean over six test years.}
 \label{tab:dd}
-\resizebox{\columnwidth}{!}{\input{tables/dd.tex}}
+\input{tables/dd.tex}
 \end{table}
 
 \begin{figure}[t]
@@ -290,8 +278,8 @@ the average rate for any model. Christoffersen's independence test rejects for 1
 for most models (6\% for the LSTM, against 49\% before the HAR/GARCH inputs). The conformal
 correction brings average exceedance to 4.6--4.9\% and narrows the yearly range, with unchanged or
 slightly worse pinball loss. For expected shortfall (baselines only) GJR and filtered historical
-simulation come closest to the realised tail size (ratio 1.02--1.03), whereas normal-based models
-understate it by 11--14\%.
+simulation come closest to the realised tail size (ratio 1.02--1.03), whereas for the normal-based models
+the realised tail loss is 12--14\% larger than predicted.
 
 \begin{table}[t]
 \centering\small
@@ -355,8 +343,8 @@ Track.\ err.\ is the RMSE of 63-day realised volatility versus the target on rea
 and in calm regimes the tree models lead. Combining HAR, GARCH and XGBoost gives the lowest RMSE and
 the most stable results across measures. \textbf{Where it does not.} No ML model significantly
 beats GJR-GARCH-t after correction, the LSTM and tree models are less reliable on VaR clustering
-and drawdown calibration, and the downstream test shows no reliable gain. This agrees with the
-literature on one-month horizons with daily data \cite{hansen2005}. \textbf{Why the comparison is
+and drawdown calibration, and the downstream test shows no reliable gain. This echoes the
+finding that leverage-aware GARCH models are hard to beat \cite{hansen2005}. \textbf{Why the comparison is
 fragile.} Only about 190 independent 21-day periods exist since 2010, portfolios share market days
 so 400 portfolios add little independent information, and several rankings change with the loss.
 We therefore emphasise paired tests, the model confidence set (which cannot separate most models)
@@ -385,7 +373,7 @@ Future work includes tuning and multiple seeds with the new inputs, other horizo
 international equities), an ES head for the ML models, and regime-aware training. All code, tests,
 tables and the dashboard are in the project repository.
 
-\begin{thebibliography}{99}\small
+\begin{thebibliography}{99}
 \bibitem{bollerslev1986} T. Bollerslev, ``Generalized autoregressive conditional heteroskedasticity,'' \emph{J. Econometrics}, vol.~31, no.~3, pp.~307--327, 1986.
 \bibitem{glosten1993} L. R. Glosten, R. Jagannathan, D. E. Runkle, ``On the relation between the expected value and the volatility of the nominal excess return on stocks,'' \emph{J. Finance}, vol.~48, no.~5, pp.~1779--1801, 1993.
 \bibitem{riskmetrics1996} J.P. Morgan/Reuters, \emph{RiskMetrics---Technical Document}, 4th ed., 1996.
@@ -404,6 +392,7 @@ tables and the dashboard are in the project repository.
 \bibitem{kupiec1995} P. H. Kupiec, ``Techniques for verifying the accuracy of risk measurement models,'' \emph{J. Derivatives}, vol.~3, no.~2, pp.~73--84, 1995.
 \bibitem{christoffersen1998} P. F. Christoffersen, ``Evaluating interval forecasts,'' \emph{Int. Economic Review}, vol.~39, no.~4, pp.~841--862, 1998.
 \bibitem{fissler2016} T. Fissler, J. F. Ziegel, ``Higher order elicitability and Osband's principle,'' \emph{Annals of Statistics}, vol.~44, no.~4, pp.~1680--1707, 2016.
+\bibitem{patton2019} A. J. Patton, J. F. Ziegel, R. Chen, ``Dynamic semiparametric models for expected shortfall (and Value-at-Risk),'' \emph{J. Econometrics}, vol.~211, no.~2, pp.~388--413, 2019.
 \bibitem{koenker1978} R. Koenker, G. Bassett, ``Regression quantiles,'' \emph{Econometrica}, vol.~46, no.~1, pp.~33--50, 1978.
 \bibitem{barone1999} G. Barone-Adesi, K. Giannopoulos, L. Vosper, ``VaR without correlations for portfolios of derivative securities,'' \emph{J. Futures Markets}, vol.~19, no.~5, pp.~583--602, 1999.
 \bibitem{gibbs2021} I. Gibbs, E. Cand\`es, ``Adaptive conformal inference under distribution shift,'' in \emph{Proc. NeurIPS}, 2021.

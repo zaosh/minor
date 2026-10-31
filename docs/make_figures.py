@@ -117,8 +117,7 @@ def vol_bars():
         ax.barh([lab(i) for i in s.index], s.values, color=[col(i) for i in s.index])
         ax.invert_yaxis()
         ax.set_title(t)
-        lo = s.min() * 0.85
-        ax.set_xlim(lo, s.max() * 1.03)
+        ax.set_xlim(0, s.max() * 1.12)  # zero baseline: bar length must mean magnitude
         for y, val in enumerate(s.values):
             ax.text(val, y, f" {val:.3f}", va="center", fontsize=6.5)
     from matplotlib.patches import Patch

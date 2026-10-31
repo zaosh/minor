@@ -152,7 +152,7 @@ bullets(s, L, TOP, Inches(7.2), Inches(5), [
     "Classic answers: GARCH, HAR, EWMA, historical VaR",
     "ML promises more flexibility, but is it actually better?"], 20)
 callout(s, Inches(8.3), Inches(2.0), Inches(4.4), Inches(2.6),
-        "Hansen & Lunde (2005): hard to beat a plain GARCH(1,1) out of sample", 22)
+        "Hansen & Lunde (2005): GARCH(1,1) was hard to beat on exchange rates; for stocks, leverage-aware models did better", 22)
 
 # 3 gap ---------------------------------------------------------------------------------
 s = slide("Research gap and our contributions", "The gap: ML-vs-econometrics comparisons often use one "
@@ -391,7 +391,7 @@ bullets(s, Inches(6.9), Inches(1.95), Inches(5.8), Inches(4.8), [
     "No ML model significantly beats GJR-GARCH-t",
     "Not better on VaR clustering or drawdown calibration",
     "No reliable edge in the downstream test",
-    "Consistent with Hansen & Lunde (2005)"], 20)
+    "Echoes Hansen & Lunde (2005): leverage-aware GARCH is hard to beat"], 20)
 
 # 21 limitations ------------------------------------------------------------------------
 s = slide("Limitations", "Be upfront: an honest limitations slide is a strength.")

@@ -1,0 +1,14 @@
+% Build-time stand-in for the Times (ptm) font definition, for machines without Times metrics.
+% Use:  TEXINPUTS=./fallback: pdflatex main.tex     (not needed on Overleaf / full TeX installs)
+\ProvidesFile{ot1ptm.fd}[2026/10/31 Computer Modern substitute for Times]
+\DeclareFontFamily{OT1}{ptm}{}
+\DeclareFontShape{OT1}{ptm}{m}{n}{<->ssub * cmr/m/n}{}
+\DeclareFontShape{OT1}{ptm}{m}{it}{<->ssub * cmr/m/it}{}
+\DeclareFontShape{OT1}{ptm}{m}{sl}{<->ssub * cmr/m/sl}{}
+\DeclareFontShape{OT1}{ptm}{m}{sc}{<->ssub * cmr/m/sc}{}
+\DeclareFontShape{OT1}{ptm}{b}{n}{<->ssub * cmr/bx/n}{}
+\DeclareFontShape{OT1}{ptm}{b}{it}{<->ssub * cmr/bx/it}{}
+\DeclareFontShape{OT1}{ptm}{b}{sl}{<->ssub * cmr/bx/sl}{}
+\DeclareFontShape{OT1}{ptm}{bx}{n}{<->ssub * cmr/bx/n}{}
+\DeclareFontShape{OT1}{ptm}{bx}{it}{<->ssub * cmr/bx/it}{}
+\DeclareFontShape{OT1}{ptm}{bx}{sl}{<->ssub * cmr/bx/sl}{}
